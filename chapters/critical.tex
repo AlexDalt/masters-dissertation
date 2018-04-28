@@ -453,7 +453,8 @@ random and does not put enough evolutionary pressure on finding an accurate solu
 Despite maintaining a broad population the fitness is lower due to this lack of
 pressure. The larger tournament size Figure~\ref{fig:tour_40} discriminates too
 aggressively, in any selection round the weakest 80\% of the population cannot
-be selected. Balancing these two facets of tournament selection a tournament size
+be selected, this leads to a dominated and ultimately weaker population.
+Balancing these two facets of tournament selection, a tournament size
 of 20 allows for a search procedure directed enough to find optimal solutions
 and with enough random influence to maintain a wide population.
 
@@ -461,10 +462,53 @@ and with enough random influence to maintain a wide population.
 Crossover works well in this context, the nature of the mapping between genotype
 and phenotype means any crossover can provide benifits to both mating pairs and
 inject some much needed diversity into the ecosystem. Six different trial runs
-were execuited, each at a different crossover probability rate; 0, 0.25, 0.5,
-0.75, and 1. Crossover points only occur between bytes, never inside them; so
-when genetic material is transplanted it is always clean and operation is
-consistent before and after.
+were execuited, each at a different crossover probability rate; 0, 0.5, and 1.
+Crossover points only occur between bytes, never inside them; so
+when genetic material is transplanted it is always clean and individual cell
+operation is consistent before and after.
+
+\begin{figure}
+	\centering
+	\begin{subfigure}[ht]{0.49\textwidth}
+		\includegraphics[width=\textwidth]{cross_0.png}
+		\caption{}
+		\label{fig:cross_0}
+		\vspace{1em}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{0.49\textwidth}
+		\includegraphics[width=\textwidth]{cross_point5.png}
+		\caption{}
+		\label{fig:cross_point5}
+		\vspace{1em}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{0.49\textwidth}
+		\includegraphics[width=\textwidth]{cross_0.png}
+		\caption{}
+		\label{fig:cross_1}
+		\vspace{1em}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{\textwidth}
+		\centering
+		\begin{tabular}{ccccc}
+			\toprule
+			& \bfseries{Crossover Prob.} &
+			\bfseries{Perfect Solutions (\%)} &
+			\bfseries{Avg. Execution Time (s)} & \bfseries{Avg. Final Fitness}\\
+			\midrule
+			(a) & 0.0 & 10 & 243 & 41\\
+			(b) & 0.5 & 3 & 245 & 41\\
+			(c) & 1.0 &  & & \\
+			\bottomrule
+		\end{tabular}
+	\end{subfigure}
+
+	\caption[Crossover probability experiment]{Crossover probability experiment;
+	(a) 0.0, (b) 0.5, and (c) 1.0}
+	\label{fig:cross}
+\end{figure}
 
 \subsection{Elitism}
 With a reduced mutation rate the effect of elitism is diminished. As the probability
