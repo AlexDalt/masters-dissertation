@@ -1,0 +1,336 @@
+% The document class supplies options to control rendering of some standard
+% features in the result.  The goal is for uniform style, so some attention
+% to detail is *vital* with all fields.  Each field (i.e., text inside the
+% curly braces below, so the MEng text inside {MEng} for instance) should 
+% take into account the following:
+%
+% - author name       should be formatted as "FirstName LastName"
+%   (not "Initial LastName" for example),
+% - supervisor name   should be formatted as "Title FirstName LastName"
+%   (where Title is "Dr." or "Prof." for example),
+% - degree programme  should be "BSc", "MEng", "MSci", "MSc" or "PhD",
+% - dissertation title should be correctly capitalised (plus you can have
+%   an optional sub-title if appropriate, or leave this field blank),
+% - dissertation type should be formatted as one of the following:
+%   * for the MEng degree programme either "enterprise" or "research" to
+%     reflect the stream,
+%   * for the MSc  degree programme "$X/Y/Z$" for a project deemed to be
+%     X%, Y% and Z% of type I, II and III.
+% - year              should be formatted as a 4-digit year of submission
+%   (so 2014 rather than the accademic year, say 2013/14 say).
+
+\documentclass[ % the name of the author
+                    author={Alexander Dalton},
+                % the name of the supervisor
+                supervisor={Prof. Seth Bullock},
+                % the degree programme
+                    degree={MEng},
+                % the dissertation    title (which cannot be blank)
+                     title={Exploring Evolutionary Hardware and its Application to Dynamic Problems},
+                % the dissertation subtitle (which can    be blank)
+                  subtitle={},
+                % the dissertation     type
+                      type={research},
+                % the year of submission
+                      year={2018} ]{dissertation}
+
+\graphicspath{ {images/} }
+\usepackage{tikz}
+\usepackage{booktabs}
+\usepackage{subcaption}
+\usetikzlibrary{chains,decorations.pathreplacing}
+\newcommand\todo{{\color{red}TODO: }}
+\renewcommand{\thempfootnote}{\arabic{mpfootnote}}
+
+\begin{document}
+
+% =============================================================================
+
+% This macro creates the standard UoB title page by using information drawn
+% from the document class (meaning it is vital you select the correct degree 
+% title and so on).
+
+\maketitle
+
+% After the title page (which is a special case in that it is not numbered)
+% comes the front matter or preliminaries; this macro signals the start of
+% such content, meaning the pages are numbered with Roman numerals.
+
+\frontmatter
+
+% This macro creates the standard UoB declaration; on the printed hard-copy,
+% this must be physically signed by the author in the space indicated.
+
+\makedecl
+
+% LaTeX automatically generates a table of contents, plus associated lists 
+% of figures, tables and algorithms.  The former is a compulsory part of the
+% dissertation, but if you do not require the latter they can be suppressed
+% by simply commenting out the associated macro.
+
+\tableofcontents
+\listoffigures
+\listoftables
+\listofalgorithms
+\lstlistoflistings
+
+% The following sections are part of the front matter, but are not generated
+% automatically by LaTeX; the use of \chapter* means they are not numbered.
+
+% -----------------------------------------------------------------------------
+
+\chapter*{Executive Summary}
+
+{\bf \color{red}A compulsory section, of at most $1$ page} 
+\vspace{1cm} 
+
+\input{chapters/executive}
+
+% -----------------------------------------------------------------------------
+
+\chapter*{Supporting Technologies}
+
+{\bf \color{red}A compulsory section, of at most $1$ page}
+\vspace{1cm} 
+
+\input{chapters/supporting_tech}
+
+% -----------------------------------------------------------------------------
+
+\chapter*{Notation and Acronyms}
+
+{\bf \color{red}An optional section, of roughly $1$ or $2$ pages}
+\vspace{1cm} 
+
+\input{chapters/notation}
+
+% -----------------------------------------------------------------------------
+
+\chapter*{Acknowledgements}
+
+{\bf \color{red}An optional section, of at most $1$ page}
+\vspace{1cm} 
+\input{chapters/acknowledgements}
+
+% =============================================================================
+
+% After the front matter comes a number of chapters; under each chapter,
+% sections, subsections and even subsubsections are permissible.  The
+% pages in this part are numbered with Arabic numerals.  Note that:
+%
+% - A reference point can be marked using \label{XXX}, and then later
+%   referred to via \ref{XXX}; for example Chapter\ref{chap:context}.
+% - The chapters are presented here in one file; this can become hard
+%   to manage.  An alternative is to save the content in seprate files
+%   the use \input{XXX} to import it, which acts like the #include
+%   directive in C.
+
+\mainmatter
+
+% -----------------------------------------------------------------------------
+
+\chapter{Contextual Background}
+\label{chap:context}
+
+{\bf \color{red}A compulsory chapter,     of roughly $5$ pages}
+\vspace{1cm} 
+
+
+\input{chapters/contextual}
+
+% -----------------------------------------------------------------------------
+
+\chapter{Technical Background}
+\label{chap:technical}
+
+{\bf \color{red}A compulsory chapter,     of roughly $10$ pages} 
+\vspace{1cm} 
+
+\input{chapters/technical}
+
+% -----------------------------------------------------------------------------
+
+\chapter{Project Execution}
+\label{chap:execution}
+
+{\bf \color{red}A topic-specific chapter, of roughly $15$ pages} 
+\vspace{1cm} 
+
+\input{chapters/project_1}
+\input{chapters/project_2}
+
+
+% -----------------------------------------------------------------------------
+
+\chapter{Critical Evaluation}
+\label{chap:evaluation}
+
+{\bf \color{red}A topic-specific chapter, of roughly $15$ pages} 
+\vspace{1cm} 
+
+\input{chapters/critical}
+
+
+% -----------------------------------------------------------------------------
+
+\chapter{Conclusion}
+\label{chap:conclusion}
+
+{\bf \color{red}A compulsory chapter,     of roughly $5$ pages} 
+\vspace{1cm} 
+\input{chapters/conclusion}
+
+% =============================================================================
+
+% Finally, after the main matter, the back matter is specified.  This is
+% typically populated with just the bibliography.  LaTeX deals with these
+% in one of two ways, namely
+%
+% - inline, which roughly means the author specifies entries using the 
+%   \bibitem macro and typesets them manually, or
+% - using BiBTeX, which means entries are contained in a separate file
+%   (which is essentially a databased) then inported; this is the 
+%   approach used below, with the databased being dissertation.bib.
+%
+% Either way, the each entry has a key (or identifier) which can be used
+% in the main matter to cite it, e.g., \cite{X}, \cite[Chapter 2}{Y}.
+
+\backmatter
+
+\bibliography{dissertation}
+
+% -----------------------------------------------------------------------------
+
+% The dissertation concludes with a set of (optional) appendicies; these are 
+% the same as chapters in a sense, but once signaled as being appendicies via
+% the associated macro, LaTeX manages them appropriatly.
+
+\appendix
+
+\chapter{simulator.h}
+This shows the functionality exposed to the evolvutionary front-end by the
+FPGA simulator, and how internal data is organised.
+
+\begin{lstlisting}
+#include <stdio.h>
+#include <ncurses.h>
+#include <curses.h>
+#include <math.h>
+
+#define FPGA_HEIGHT 4
+#define FPGA_WIDTH 4
+#define STRING_LENGTH_BYTES FPGA_WIDTH * FPGA_HEIGHT * 2
+#define FAULT_NUM 0
+#define FAULT_TYPE_CON 0
+
+typedef enum {
+	OFF,
+	NOT,
+	OR,
+	AND,
+	NAND,
+	NOR,
+	XOR,
+	XNOR
+} Gate;
+
+typedef enum {
+	NORTH,
+	EAST,
+	SOUTH,
+	WEST,
+	F
+} Direction;
+
+typedef struct {
+	int x, y;
+	Direction dir;
+	unsigned char value;
+} Fault;
+
+typedef struct {
+	Direction n_out, e_out, s_out, w_out;
+	Gate gate;
+	Direction g_in1, g_in2;
+
+	//3 values: 0, 1, 2 (2 represents undefined)
+	unsigned char n_in, e_in, s_in, w_in;
+	unsigned char n_val, e_val, s_val, w_val;
+} Cell;
+
+typedef struct {
+	Cell cells[ FPGA_HEIGHT ][ FPGA_WIDTH ];
+	unsigned char control;
+	unsigned char input[ FPGA_WIDTH ];
+
+	Fault faults[ FAULT_NUM ];
+	int active_fault[ FAULT_NUM ];
+} FPGA;
+
+/*
+ * FPGA is defined by a bitstring of the following format:
+ * 		- the bitstring defines cells from left to right, top to bottom, row by row, one byte per cell
+ * 		- the least significant 2 bits define the value pushed to n_out (F,EAST,SOUTH,WEST)
+ * 		- the next 2 define the value pushed to e_out (NORTH,F,SOUTH,WEST)
+ * 		- the next 2 define the value pushed to s_out (NORTH,EAST,F,WEST)
+ * 		- the next 2 define the value pushed to w_out (NORTH,EAST,SOUTH,F)
+ * 		- the next 2 define where the first input for F comes from (NORTH,EAST,SOUTH,WEST)
+ * 		- the next 2 define where the second input for F comes from (NORTH,EAST,SOUTH,WEST)
+ * 		- the next 3 define the function F performs (OFF,NOT,OR,AND,NAND,NOR,XOR,XNOR)
+ * 		- the most significant bit is reserved
+ */
+
+void bitstring_to_fpga ( FPGA *fpga, unsigned char *bits );
+
+void evaluate_fpga ( FPGA *fpga );
+
+void init_curses ();
+
+void redraw ( int iteration, FPGA fpga, int most_fit, int mean_fit, int mean_div, int add_weight, int sub_weight );
+
+void tidy_up_curses();
+\end{lstlisting}
+
+\label{appx:sim}
+
+\chapter{evolve.h}
+\label{appx:evolve}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <math.h>
+#include "simulator.h"
+
+#define POP_SIZE 400
+#define MUTATION 0.5f
+#define SIZE_WEIGHT 0
+#define DIVERSITY_WEIGHT 4
+#define ELITISM 1
+#define FITNESS_WEIGHT 10
+#define COEVOLVE 0
+#define STICKY 0
+#define LOG 1
+#define PROB_SKEW 0.0f //between 0 or 1, 1 is linear
+#define VIRULENCE 1.0f
+#define PARASITE_SIZE 16
+
+int add_weight, sub_weight;
+
+typedef struct Individual {
+	unsigned char values[ STRING_LENGTH_BYTES ];
+	int eval[ 3 ];
+	FPGA fpga;
+} Individual;
+
+typedef struct Parasite {
+	unsigned char values[ PARASITE_SIZE ];
+	float score;
+} Parasite;
+\end{lstlisting}
+
+% =============================================================================
+
+\end{document}

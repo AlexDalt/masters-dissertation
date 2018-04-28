@@ -1,0 +1,522 @@
+{
+\color{red}
+
+This chapter is intended to describe what you did: the goal is to explain
+the main activity or activities, of any type, which constituted your work
+during the project.  The content is highly topic-specific, but for many
+projects it will make sense to split the chapter into two sections: one
+will discuss the design of something (e.g., some hardware or software, or
+an algorithm, or experiment), including any rationale or decisions made,
+and the other will discuss how this design was realised via some form of
+implementation.
+
+This is, of course, far from ideal for {\em many} project topics.  Some
+situations which clearly require a different approach include:
+
+\begin{itemize}
+\item In a project where asymptotic analysis of some algorithm is the goal,
+      there is no real ``design and implementation'' in a traditional sense
+      even though the activity of analysis is clearly within the remit of
+      this chapter.
+\item In a project where analysis of some results is as major, or a more
+      major goal than the implementation that produced them, it might be
+      sensible to merge this chapter with the next one: the main activity
+      is such that discussion of the results cannot be viewed separately.
+\end{itemize}
+
+\noindent
+Note that it is common to include evidence of ``best practice'' project
+management (e.g., use of version control, choice of programming language
+and so on).  Rather than simply a rote list, make sure any such content
+is useful and/or informative in some way: for example, if there was a
+decision to be made then explain the trade-offs and implications
+involved.
+}
+
+The core of this project involves building a flexible evolvable hardware
+platform upon which novel genetic algorithm can design solutions which can be
+evaluated in a narrow context. Due to the high demands of an iterative
+design cycle, reducing the evaluation time within the genetic algorithm is
+at the forefront of the design process; to this end a simulated FPGA is used
+to simplify development and improve the speed of evolutionary training.
+
+A single problem has to be chosen to which we will tailor the genetic process.
+
+\section{Project Management}
+The sourcecode is hosted online at \url{https://github.com/AlexDalt/MalleableHardwareAdder},
+it's written in C to maximise training performance and Git was used for version control.
+Regular supervisor meetings ensured the project stayed focussed. The aims
+of the project are reduced to evaluating various performance metrics of
+different and new evolvable hardware processes.
+
+\section{Design}
+The high level design choices have been made to improve development time
+and discern insights into evolutionary hardware with dynamic problems and
+the scaling issues involved.
+
+\todo talk about some problems common with GA design
+
+\subsection{Phenotype to Genotype Mapping}
+The mapping from binary string to FPGA configuration is one of the first design
+choices to be made. The simulated FPGA will be of configurable width and height, and each
+cell will operate as described in \cite{10.1007/3-540-63173-9_61} and Figure~
+\ref{fig:fpga}. Each cell takes
+input from each of it's neighbours, performs a binary function $F$ on chosen input(s)
+and sends distinct configurable outputs to each of it's neighbours. The binary
+function $F$ or any of the inputs can be sent to any of the outputs.
+
+To fully describe the operation of a cell a 15-bit binary string was chosen.
+This is arranged in memory as 2 bytes per cell, of which one bit is unused.
+The least significant byte defines all the outputs, 2 bits per neighbour
+(from least significant bits to most significant bits: north, east, south,
+and west), where a 0 is defined as a direct mapping from the northern input
+to that output, a 1 means the eastern input is used, 2 the southern, and 3
+western. An output cannot be mapped to it's input, in the situation that the
+number associated with an output refers to the input coming from the same
+direction the function $F$ is used as input instead. A description of
+the complete string can be found in Figure~\ref{fig:bin}.
+
+The most significant byte describes the function $F$. The low 2 bits describe
+the first input (00 $\rightarrow$ north, 01 $\rightarrow$ south, 10
+$\rightarrow$ east, 10 $\rightarrow$ west), the next 2 bits describe the second
+input in the same manner, and the next 3 bits describe the operation performed
+(000 $\rightarrow$ OFF, 001 $\rightarrow$ NOT, 010 $\rightarrow$ OR, 011 $\rightarrow$
+AND, 100 $\rightarrow$ NAND, 101 $\rightarrow$ NOR, 110 $\rightarrow$ XOR, 111
+$\rightarrow$ XNOR).
+
+\begin{figure}
+	\centering
+	\begin{subfigure}[ht]{0.45\textwidth}
+	\begin{tikzpicture}[
+node distance=0pt,
+ start chain = A going right,
+    X/.style = {rectangle, draw,% styles of nodes in string (chain)
+                minimum width=2ex, minimum height=3ex,
+                outer sep=0pt, on chain},
+    B/.style = {decorate,
+                decoration={brace, amplitude=5pt,
+                pre=moveto,pre length=1pt,post=moveto,post length=1pt,
+                raise=1mm,
+                            #1}, % for mirroring of brace, if necessary
+                thick},
+    B/.default=mirror, % by default braces are mirrored
+                        ]
+\foreach \i in {0,1,1,0,0,0,1,0,0,
+                0,1,0,1,0,0,0}% <-- content of nodes
+    \node[X] {\i};
+\draw[B] ( A-2.south west) -- node[below=2mm] {F} ( A-4.south east);
+\draw[B=] ( A-5.north west) -- node[above=2mm] {F in 1} ( A-6.north east);
+\draw[B] ( A-7.south west) -- node[below=2mm] {F in 2} ( A-8.south east);
+\draw[B=] ( A-9.north west) -- node[above=2mm] {W out} ( A-10.north east);
+\draw[B] ( A-11.south west) -- node[below=2mm] {S out} ( A-12.south east);
+\draw[B=] ( A-13.north west) -- node[above=2mm] {E out} ( A-14.north east);
+\draw[B] ( A-15.south west) -- node[below=2mm] {N out} ( A-16.south east);
+    \end{tikzpicture}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{0.25\textwidth}
+		\centering
+		\begin{tabular}{cc}
+		\toprule
+		Direction & Encoding \\
+		\midrule
+		NORTH & 00 \\
+		EAST & 01 \\
+		SOUTH & 10 \\
+		WEST & 11 \\
+		\bottomrule
+		\end{tabular}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{0.25\textwidth}
+		\centering
+		\begin{tabular}{cc}
+		\toprule
+		Function & Encoding \\
+		\midrule
+		OFF & 000 \\
+		NOT & 001 \\
+		OR & 010 \\
+		AND & 011 \\
+		NAND & 100 \\
+		NOR & 101 \\
+		XOR & 110 \\
+		XNOR & 111 \\
+		\bottomrule
+		\end{tabular}
+	\end{subfigure}
+
+	\caption{Genetic representation for a single FPGA cell}
+	\label{fig:bin}
+\end{figure}
+
+Cells are defined from left to right, top to bottom on the FPGA. Therefore the
+binary strign required to describe an FPGA of width $w$ and height $h$ is $2wh$
+bytes long.
+
+This mapping was chosen because it is loosely in line with the number of bits
+required by \cite{10.1007/3-540-63173-9_61}. It allows concise expression of
+the FPGA. The order in which cells are defined also follows
+\cite{10.1007/3-540-63173-9_61}, and means any crossover occurring keeps
+the horizontal sections consistent with each other.
+
+\todo include mapping order diagram and potential crossover diagram
+
+\subsection{Problem Choice}
+
+The choice of problem is a key component in designing and configuring the genetic
+algorithm to tackle it.
+
+Within evolutionary hardware there are a number of benchmark problems, these usually
+take the form of robot controllers, prosthetics controllers, or signal processing
+circuits. With a mind to hardware in a generic sense binary addition appeared to be
+an interesting problem, which would require a great deal of genetic algorithm tuning.
+
+With a desire to explore dynamic problems addition also opens up the possibility of
+introducing subtraction as a related but distinct problem. To this end evaluation
+will consist of checking both addition and subtraction with weightings which can
+vary over time.
+
+\todo Talk about the complexity of the problem, the need to plan ahead, channels crossing over,
+individual simplicity but the need to chain together
+
+\subsection{Evaluation in the Genetic Algorithm}
+
+Developing a genetic hardware on a physical FPGA requires a large amount of hardware
+design language knowledge, without it the work required could have constituted the
+entire project. Also, with physical hardware the time required to evaluate each
+population member can be measured in seconds, whereas in simulation each evaluation
+requires a fraction of a second. These factors made the creation of a
+streamlined software FPGA simulator as the evaluation backend for the
+genetic algorithm an enticing prospect.
+
+The simulation works as a self contained module which exposes a series of
+evaluation functions to the evolutionary system. When evaluating a binary
+addition or subtraction the FPGA is initialised to contain entirely undefined
+values (represented by a 2 internally), then the individual bits constituting the binary representation of the two numbers are fed
+to each cell across the top of the FPGA in turn, and a control bit (designating addition/
+subtraction) is fed to the top left cell. The FPGA execution consists of
+two steps, a tick, and a tock; the tick involves pulling values from the surrounding
+cells and storing them internally, then the tock involves performing the computation
+and storing the neccessary values in the output buffer associated with each neighbor.
+The tick tock
+cycle continues until the southern output of the bottom cells is no longer undefined
+and stabilises on a constant output; unless this doesn't happen within 64 iteration
+in which case the simulation halts.
+The output of the FPGA is read across the bottom row of cells.
+The halting compromise is necessary as some FPGA configurations
+have an oscillating output which never settles. This process is repeated for all possible
+additions and subtractions and then the individual is scored based on the number
+of correct bits read off the bottom-most cells.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.6\textwidth]{evaluation.png}
+\caption{Diagram detailing how evaluation parameters are fed into the FPGA and answers
+read off for a 2-bit arithmetic problem}
+\label{fig:control}
+\end{figure}
+
+Figure~\ref{fig:control} demonstrates the framework evaluating a 4x4 FPGA attempting
+binary arithmatic. Two 2-bit numbers, $x$ and $y$ are deconstructed into the constituent
+binary values where $x = x_0 + 2^{x_1}$ and $y = y_0 + 2^{y_1}$, these are made available
+to the top row of FPGA cells from most significant to least significant bit, and a
+control bit (indicating addition or subtraction) is presented to the top left cell.
+After FPGA evaluation has concluded 3 bits are read from the bottom, the two bits
+constituting the 2-bit answer ($b_0$,$b_1$) and the carry out bit.
+
+The FPGA initialisation step is essential to ensure a deterministic evaluation
+process. Without the initialisation, depending on the order in which evaluations
+are performed the FPGA can settle on an correct (or incorrect) output dude to the
+time taken for new values to propegate through the circuit. This leads to identical
+configurations which receive wildly different scores in two evaluations.
+
+\subsection{Fitness Landscape}
+
+\begin{figure}
+\centering
+\includegraphics[width=.7\textwidth]{landscape.png}
+\caption{Sampled fitness landscape}
+\label{fig:landscape}
+\end{figure}
+
+\todo evolution eye-view on ruggedness, redo this entire section
+
+When tackling a genetic problem it is important to have an underlying appreciation
+for the space of potential answers and how these are related to one another.
+In the case of evolutionary hardware
+mapping the entire search space is unfeasible, even for a relatively small
+FPGA configuration.
+The genetic material describing a 4x4 FPGA
+is 32 bytes long, therefore there are $2^{32\cdot8}$ potential solutions, any
+enumerated bruteforce search processes can only uncover a
+miniscule, uninteresting and unrepresentative corner of the fitness landscape
+within any reasonable timeframe.
+In order to gain an understanding for the cartography of the fitness landscape
+13000 randomly generated configurations were evaluated and then ordered based
+their genetic material, the results are graphed in Figure~\ref{fig:landscape}.
+
+\todo find a reference talking about GAs being good when you have little understanding
+of underlying fitness landscape and topography, crazy hyper-dimentional shapes
+
+In keeping with problems often tackled by genetic algorithms this landscape is discontinuous
+and random. Despite this however,
+the landscape is one which doesn't necessarily lend itself to easy searching via genetic algorithm.
+It is covered in local optima and the peaks are sharp, unpredictable, and not uniformly
+distributed. Therefore solutions will often be local optima, and successful solutions will
+be fragile, not taking much mutating to be cast back into the primordial soup.
+
+An ideal fitness landscape for genetic algorithms is one which has gentle hills
+which can be ascended, where aggressive mutation does little to render a potential
+solution inert. However, the landscape hinted at in Figure~\ref{fig:landscape} is
+one which there are few effective mechanisms to navigate, the current ideal resting
+with a highly targeted genetic algorithm.
+
+\subsection{Genetic Algorithm}
+
+The basis for the genetic algorithm follows similar work done by Adrian Thompson
+\cite{10.1007/3-540-63173-9_61}, but with a number of alternate avenues explored
+for problem specific improvements.
+
+\paragraph{Parameter choices}
+The basic genetic algorithm has a number of interplaying parameters which affect the genetic
+process in some interesting ways. Population size is one such parameter which we must consider,
+the number of individuals in each generation can drastically effect execution. As you grow the
+population you improve the probability of finding a solution by a given generation, but this has
+diminishing returns and makes the evaluation time considerably more laborious. A smaller population
+tends to be less diverse and is more easily dominated by a single effective solution
+and it's descendants.
+
+Another important variable in the genetic process is the mutation rate, this defines the
+frequency with which we are to expect mutations in the offspring of a given generation.
+With a high mutation rate one climbs the evolutionary ladder quicker and can make larger
+leaps across a chasm of low fitness. However in less robust populations a high mutation rate
+can eradicate fragile solutions leading to a weak population never capable of
+climbing to the narrow peak of high fitness.
+
+\paragraph{Selection mechanism}
+\todo why do we ignore stochastic selecton
+The primary selection method will be rank-based selection, which is by far
+the most popular selection method observed in preexisting work, however,
+tournament selection will also be explored.
+
+Rank-based selection is performed primarily by ordering the members of a population
+based on their fitness and then associating the probability of selection to a
+linear function on the
+position within the ranking. By adding a "skew" by shifting the probability function
+to one closer resembling a quadratic one can emphasise the best performing
+individuals over the more balanced linear selection function.
+
+\begin{equation}
+	\label{equ:skew}
+	P(x) = \frac{2}{n(n+1)} (\frac{1-s}{n}r^2 + sr + 1)
+\end{equation}
+
+A single parameter change allows us to change the relative weightings of high scoring
+and low scoring individuals in a population via Equation~\ref{equ:skew}. Given
+population size n, individual x, the individuals position in the ranking r, and
+skew s (between 0 and 1, where 1 is linear selection and 0 is quadratic) it
+generates a score between 1 and the population size plus 1. By varying the skew
+value I hope to gain insight into the impact of a more or less discriminatory
+selection mechanism.
+
+Tournament selection involves randomly selecting $k$ individuals from the
+population, and the one with the highest fitness is chosen to fill a place
+in the new generation. The process is repeated until the new generation is
+sufficiently populated. This adds another element of randomness to the
+genetic process, giving poorer solutions an opportunity to be in a tournament
+with other poor solutions and therefore has the ability to improve the
+diversity of the new population at the expense of running the risk that
+better solutions might be chosen for tournaments infrequently (or not at
+all).
+
+Roulette wheel selection is not well suited for the task of binary addition
+within evolvable hardware. The fitness increases associated with a slight
+improvement in the design are huge, and this often leads to marginally better
+solutions eclipsing solutions which given more time could have evolved into
+equivalent (or even improved) solutions.
+
+\paragraph{Elitism}
+
+Selection will also incorporate elitism, this directly copies the best individual
+to the next population and ensures that the most fit member
+of the population is preserved unmolested by mutation. The fragility of potential
+solutions has been highlighted by Figure~\ref{fig:landscape} and highlights the
+need to employ some preservation mechanisms.
+
+\paragraph{Multi-objective Fitness Function}
+\todo Reference forwards, early testing demonstrated the need for a diversity
+measurement, see page ...
+
+Extending the generic fitness function to a linear combination of multiple different
+functions applies evolutionary pressure to a multitude of useful different factors.
+For evolvable hardware the most important are often correctness and size.
+
+A small design is desirable as the smaller a design is the less power consumed
+by the device. To encourage smaller configurations a fitness functions can
+incorporate the number of cells inactive in a design into the evaluation
+procedure.
+
+Given the large volume of local optima and irregular peaks in the fitness
+landscape as demonstrated by Figure~\ref{fig:landscape}, it may be prudent to
+also incorporate some measure of diversity. \cite{deJong:2001:RBP:2955239.2955241}
+proposes a using a
+distance measure from each individual to each other individual in the population
+to generate a score for the mean squared distance from a given member of the
+population to the rest of the population. This metric can be incorporated into
+the multi-objective fitness function to preserve designs based on novelty alone.
+These novel designs continue to experience evolutionary pressure and a series
+of distinct optima should exist within the population, improving the probability
+that the system avoids evolutionary deadends and discovers a working solution.
+
+The proposed diversity metric does not scale well as the population size increases
+as with a population size of $n$ the evaluation step requires $O(n^2)$ individual
+distance measurements.
+
+\begin{equation}
+	\label{equ:multi}
+	f(x) = w_{correct} f_{correct}(x) + w_{size} f_{size}(x) +
+	w_{div} f_{div}(x)
+\end{equation}
+
+Equation~\ref{equ:multi} summarises the multi-objective fitness function around
+which this evolvable hardware system is developed, where $w_x$ is the weighting
+associated with the fitness function $f_x$. $f_{correct}$ is the original fitness
+function of the process. The weightings are all
+configurable and allows for fine grain sculpting of the evolutionary process.
+The size metric ensures power efficient solutions, and the diversity encourages
+a genetic variety. These need to be balanced with the weight given to solutions
+to be correct, it should be more important to be correct than small, for example.
+
+\paragraph{Crossover}
+Early experiments will be conducted without any crossover mechanism, and therefore
+asexual reproduction (individuals will only have a single parents). But single
+point crossover will eventually be included and a range of crossover probabilities
+will be investigated.
+
+After selection the new population of strings will be randomly paired up, and given
+a probability will undergo single point crossover. If crossover is to happen a
+random point in the 32 byte string is chosen and the two paired individuals will
+swap all values beyond the randomly chosen point. Once the entire population has
+undergone a similar procedure the population experiences mutation.
+
+
+\subsection{Coevolution}
+
+Coevolution will be implemented in a manner similar to the scheme outlined in
+\cite{6790490}.
+This will allow coevolution to act as an effective method of employing selective
+evaluation and evolutionary pressure to a host population in the context of
+evolvable hardware. The selective evaluation will both act as a way to more effectively
+discriminate between FPGA configurations but also to reduce the size of the
+set of evaluation problems and improve scalability.
+
+A separate population of identical size to the core population of FPGA configurations
+will be generated at random. Individuals in this population will consist of a small set
+of bitstrings of length of $2b$ where $b$ is the number of bits required for
+each operand used in the addition (or subtraction). The first half of the problems
+will pertain to addition, and the second half represent subtraction problems.
+When using coevolution the
+evaluation step is slightly modified. To evaluate both the host (FPGA
+configurations) and parasite (list of problems) populations each host is randomly
+paired with a parasite, and the host is evaluated as before save that the equations
+fed into the FPGA are only the ones specified by each item in the set contained within
+the parasite. The parasite gains a score of $m - f_{add}(x) - f_{sub}(x)$ where
+$m$ is the maximum score possible ($bl$, where $b$ is the number of output bits for
+each problem and $l$ is the length of the set of problems contained within a
+parasite).
+
+\todo include parasite diagram
+
+Then the parasite population undergoes selection and mutation in an identical
+fashion to the host population.
+
+\paragraph{Variable virulence}
+By varying the parasite virulence I hope to reduce the intense discrimination
+which could lead to population disengagement and would be exasperated by the
+fitness landscape fragility. To this end the ability to vary the parasite
+aggression is a central feature of the evolutionary system.
+
+After the parasite is initially scored this score is then translated through
+a predefined function. The score is divided by the maximum parasite fitness so
+the all fitness exists between 0 and 1. Then given a virulence
+between 0.5 and 1.0 (where 1.0 is maximally virulent), the score is translated
+via Equation~\ref{equ:vir}, where $m$ is the new modified score, $s$ is the
+previous score (normalised to be between 0 and 1), and $v$ is the virulence.
+This equation is taken from the coevolutionary work done in \cite{6790490}.
+
+\begin{equation}
+	\label{equ:vir}
+	m = \frac{2s}{v} - \frac{s^2}{v^2}
+\end{equation}
+
+\paragraph{Improved scaling}
+Coevolution has the potential to improve how an evolutionary hardware system scales.
+The literature has extensively explored how to tackle the ballooning search space size
+as you increase the scope of the problem being addressed, but little has been done
+to improve the scaling of the evaluation function itself. As you increase the scale
+of an evolvable hardware problem, the set of test cases grows at an exponential rate.
+I suggest that by coevolving a population of problems against a population of FPGA
+configurations we can aggressively reduce the number of test cases used for a fitness
+evaluation, and therefore improve system scaling.
+
+\subsection{Fault Modelling}
+In order to explore the capacity of evolutionary algorithms to design fault
+tolerant circuitry and also the use of evolutionary hardware as a fault
+recovery mechanism in itself the definition of what constitutes a fault in
+this context must be narrowed down. I primerily want to explore faults
+generated on a device as it is used, these faults are mainly caused by
+component wear out and unpredictable environmental effects, to
+this end I will extend the FPGA simulation to model
+faults in the internal logic of an FPGA cell. These faults will manifest as clamping
+the output of any logic operation to 0, 1, or 2 (which is the value reserved to represent
+an undefined value). The evolutionary algorithm is unaware of the
+faults, the only perceptible difference is in the evaluation of a population,
+which executes as expected and continues to encourage the population to improve in this
+new context.
+
+For most of the testing faults will be randomly generated at runtime; a neccessary
+feature due to the unpredictable nature of Darwinean search, but for specific
+fault recovery cases expected faults can be specified. An interesting case arises when
+a model 2-bit adder is embedded in the population, and then a critical fault is
+induced. Observing the sharp recovery of the system indicates the potential of
+such a fault recovery mechanism.
+
+Along with observing how evolution can help a system recover from a fault, an
+analysis into how a system evolves in the presence of intermittent "sticky"
+faults could give insight into the uncomfortable world of irregular fault behaviour.
+The evaluation backend of the evolvable hardware platform can activate and
+deactivate faults as required. Evolving in the presence of such an evaluation
+mechanism should gradually encourage a population which can perform well
+irrespective of an active fault or not.
+
+\todo add sticky fault state machine
+
+The reason the faults exist is of no consequence to the evolutionary process,
+but grounding this exploration in expected fault models will help to generate
+practical recovery methods.
+
+\todo cite
+
+\subsection{Dynamic Weightings}
+The second set of dynamic problems being explored involves shifting the relative
+weightings applied to ADDs and SUBs in the evaluation step during execution. The
+automatic reweighting during execution will allow for the modeling of a system
+which has shifting execution priority. In order to maintain a balance between
+correctness, size, and diversity in the fitness function the weighting associated
+with addition and subtraction are changed together, as one increases the other
+decreases. This means that once tuned to effective weightings the exploration of
+a dynamically shifting problem is unburdened by the complications of a sensitive
+fitness function.
+
+Irrespective of the weightings associated with addition and subtraction the
+evaluation step collects complete information about the performance of each.
+This is then multiplied by the weightings and divided by the sum of the two
+weightings. This produces a value within a constant window. The extended fitness
+function which was used is given in Equation~\ref{equ:dynamic}.
+
+\begin{equation}
+	\label{equ:dynamic}
+	f(x) = \frac{w_{add} f_{add}(x) + w_{sub} f_{sub}(x)}{w_{add} + w_{sub}} + w_{size} f_{size}(x) +
+	w_{div} f_{div}(x)
+\end{equation}
