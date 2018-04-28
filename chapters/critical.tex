@@ -89,7 +89,7 @@ of domain specific tuning is required.
 		\end{tabular}
 	\end{subfigure}
 
-	\caption{Initial test results; (a) fitness over time when the parameters are
+	\caption[Initial test results]{Initial test results; (a) fitness over time when the parameters are
 		initialised to \cite{10.1007/3-540-63173-9_61}, (b) fitness over time
 		with an extended multi-objective fitness function incorporating a measure
 		of diversity.}
@@ -199,7 +199,7 @@ runs would take in excess of 2 hours.
 		\end{tabular}
 	\end{subfigure}
 
-	\caption{Larger population diversity trail; (a) fitness over time with parameters
+	\caption[Large population diversity trail]{Larger population diversity trail; (a) fitness over time with parameters
 		initialised to \cite{10.1007/3-540-63173-9_61} but with a population of 500,
 		(b) accuracy over time with an extended multi-objective fitness function and
 	a population size of 500.}
@@ -433,7 +433,29 @@ The more aggresive discrimination against members of the population due to the
 variable skew is clear in Figure~\ref{fig:select}. The population under a more
 aggressive selection mechanism (Figure~\ref{fig:skew_0}) persue the
 maximum accuracy somewhat quicker than the more linear rank selections
-(Figure~\ref{skew_point5} and Figure~\ref{skew_1}).
+(Figure~\ref{fig:skew_point5} and Figure~\ref{fig:skew_1}), however this
+more aggressive discrimination more often than not directs the population
+with something approaching single-minded determination, to it's detriment.
+The average final fitness is clearly lower with a quadratic rank than with a
+linear rank.
+
+Tournament selection with a tournament size of 20 is a clear improvement over
+any other selection methods thus far, and has had the single largest impact
+on the number of perfect solutions evolved of any parameter exploration until
+now. 13\% of the trails ended in a perfect solution with an accuracy score of 48.
+Individuals are chosen uniformally at random for a tournament, but within a
+tournament only the most fit individual wins. This interplay between minimally
+and maximally discrimanatory selection schemes results in heavily directed evolutionary
+search which maintains a very diverse population. Each of the tournament schemes
+have a high population accuracy over a much wider variance than any of the rank
+selection schemes. The smaller tournament size, Figure~\ref{fig:tour_10} is too
+random and does not put enough evolutionary pressure on finding an accurate solution.
+Despite maintaining a broad population the fitness is lower due to this lack of
+pressure. The larger tournament size Figure~\ref{fig:tour_40} discriminates too
+aggressively, in any selection round the weakest 80\% of the population cannot
+be selected. Balancing these two facets of tournament selection a tournament size
+of 20 allows for a search procedure directed enough to find optimal solutions
+and with enough random influence to maintain a wide population.
 
 \subsection{Crossover}
 Crossover works well in this context, the nature of the mapping between genotype
