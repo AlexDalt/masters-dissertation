@@ -76,7 +76,9 @@ has been evaluated, the evolutionary front end is a distinct entity which operat
 almost solely on the abstract bitstrings which constitute the population(s)
 being evolved.
 
-\todo talk about datastructures involved, individual, parasite etc.
+\todo talk about datastructures involved, individual, parasite etc. ind has space
+for the FPGA struct in it so it doesnt have to be reinstantiated throughout the
+process
 
 Initially a population of \texttt{POP\_SIZE} bitstrings of length \texttt{STRING\_LENGTH\_BYTES}
 are randomly generated using the pseudorandom \texttt{rand()} syscall, which

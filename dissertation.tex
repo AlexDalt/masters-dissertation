@@ -37,7 +37,8 @@
 \graphicspath{ {images/} }
 \usepackage{tikz}
 \usepackage{booktabs}
-\usepackage{subcaption}
+\usepackage[labelformat=simple]{subcaption}
+\renewcommand\thesubfigure{(\alph{subfigure})}
 \usetikzlibrary{chains,decorations.pathreplacing}
 \newcommand\todo{{\color{red}TODO: }}
 \renewcommand{\thempfootnote}{\arabic{mpfootnote}}
