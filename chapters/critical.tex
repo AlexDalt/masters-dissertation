@@ -40,6 +40,8 @@ addition and subtraction the maximum score is 48.
 \todo talk about the measurements - we measure the accuracy because it is
 the metric we are trying to improve, not fitness
 
+\todo reference back a lot to other papers
+
 All experiments were conducted on a late 2013 15" Apple MacBook Pro with an
 Intel Haswell Core i7 processor clocked at 2.3 GHz and 16GB of RAM.
 
@@ -281,7 +283,7 @@ itterative improvement. Population size will, however, be futher explored on pag
 		\end{tabular}
 	\end{subfigure}
 
-	\caption{Mutation test results; (a) 1 expected mutation per individual,
+	\caption[Mutation test results]{Mutation test results; (a) 1 expected mutation per individual,
 		(b) 2 expected mutations per individual,
 		(c) 3 expected mutations per individual,
 		(d) 4 expected mutations per individual}
@@ -405,7 +407,7 @@ be selected for the next generation.
 			\bfseries{Perfect Solutions (\%)} &
 			\bfseries{Avg. Execution Time (s)} & \bfseries{Avg. Final Fitness}\\
 			\midrule
-			REDO THIS (a) & Rank (Skew 0.0) & 0 & 415 & 38 \\
+			(a) & Rank (Skew 0.0) & 0 & 304 & 40 \\
 			(b) & Rank (Skew 0.5) & 0 & 415 & 40 \\
 			(c) & Rank (Skew 1.0) & 0 & 363 & 40 \\
 			(d) & Tournament (Size 10) & 0 & 264 & 42 \\
@@ -416,11 +418,8 @@ be selected for the next generation.
 		\end{tabular}
 	\end{subfigure}
 
-	\caption[Selection method test results; (a)(b)(c)
-	rank based
-	selection with skew 0.0, 0.5, and 1.0 respectively
-	, (d)(e)(f)(g) using tournament selection with tournament
-	size 10, 20, 30, and 40 respectively]{Selection method test results; (a)(b)(c)\footnote[1]{(c) duplicated from Figure~\ref{fig:mut_3} for better direct
+	\caption[Selection method test results]{Selection method test results;
+		(a)(b)(c)\footnote[1]{(c) duplicated from Figure~\ref{fig:mut_3} for better direct
 	visual comparison} rank based
 	selection with skew 0.0, 0.5, and 1.0 respectively
 	, (d)(e)(f)(g) using tournament selection with tournament
@@ -484,7 +483,7 @@ operation is consistent before and after.
 	\end{subfigure}
 	~
 	\begin{subfigure}[ht]{0.49\textwidth}
-		\includegraphics[width=\textwidth]{cross_0.png}
+		\includegraphics[width=\textwidth]{cross_1.png}
 		\caption{}
 		\label{fig:cross_1}
 		\vspace{1em}
@@ -500,7 +499,7 @@ operation is consistent before and after.
 			\midrule
 			(a) & 0.0 & 10 & 243 & 41\\
 			(b) & 0.5 & 3 & 245 & 41\\
-			(c) & 1.0 &  & & \\
+			(c) & 1.0 & 3 & 249 & 41\\
 			\bottomrule
 		\end{tabular}
 	\end{subfigure}
@@ -510,13 +509,45 @@ operation is consistent before and after.
 	\label{fig:cross}
 \end{figure}
 
+\todo more here
+
+The best performance thus far is when the probability of crossover is set
+to 0.7.
+
 \subsection{Elitism}
-With a reduced mutation rate the effect of elitism is diminished. As the probability
-of a correct solution being mutated away and broken is reduced. Elitism by it's very
-nature leads to less diverse populations, but it is often a necessity in evolvable
-hardware to stop systems regressing. Binary arithmatic is especially fragile.
+With a mutation rate as high as shown here the effect of elitism is hightened.
+The probability of a mutation crippling a design is relatively high and so a population
+without elitism is prone to climbing the evolutionary ladder just to be cast
+down by luck. Binary arithmatic is especially fragile, as demonstrated by Figure~\ref{fig:no_elitism},
+where the evolutionary parameters are consistent with our highest performer so far, except
+elitism is turned off.
+
+\begin{figure}
+	\centering
+	\begin{subfigure}[ht]{0.49\textwidth}
+		\includegraphics[width=\textwidth]{no_elite.png}
+		\vspace{1em}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{\textwidth}
+		\centering
+		\begin{tabular}{ccc}
+			\toprule
+			\bfseries{Perfect Solutions (\%)} &
+			\bfseries{Avg. Execution Time (s)} & \bfseries{Avg. Final Fitness}\\
+			\midrule
+			0 & 281 & 19\\
+			\bottomrule
+		\end{tabular}
+	\end{subfigure}
+
+	\caption[Removing elitism test results]{Removing elitism test results}
+	\label{fig:no_elitism}
+\end{figure}
 
 \subsection{Tuning Population Size}
+25, 50, 100, 200 - tournament size scales too
+
 With the desire to cultivate a diverse population at the forefront of the parameter
 selection reasoning enlarging the population would improve the spread of solutions,
 and allow the evolutionary pressure on diversity to simultaneously mature and
@@ -533,9 +564,52 @@ fitness function could be beyond the point of diminishing returns. To explore th
 further trials varying the population size to explore how execution time and
 genetic algorithm performance is affected.
 
-\subsection{Tuning Diversity}
+\begin{figure}
+	\centering
+	\begin{subfigure}[ht]{0.49\textwidth}
+		\includegraphics[width=\textwidth]{tour_20.png}
+		\caption{}
+		\vspace{1em}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{0.49\textwidth}
+		\includegraphics[width=\textwidth]{tour_20.png}
+		\caption{}
+		\vspace{1em}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{0.49\textwidth}
+		\includegraphics[width=\textwidth]{pop_100.png}
+		\caption{}
+		\vspace{1em}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{0.49\textwidth}
+		\includegraphics[width=\textwidth]{pop_200.png}
+		\caption{}
+		\vspace{1em}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{\textwidth}
+		\centering
+		\begin{tabular}{ccccc}
+			\toprule
+			& \bfseries{Population Size} &
+			\bfseries{Perfect Solutions (\%)} &
+			\bfseries{Avg. Execution Time (s)} & \bfseries{Avg. Final Fitness}\\
+			\midrule
+			(a) & 25 & & & \\
+			(b) & 50 & 13 & 231 & 42\\
+			(c) & 100 & 17 & 457 & 42\\
+			(d) & 200 & 57 & 955 & 44\\
+			\bottomrule
+		\end{tabular}
+	\end{subfigure}
 
-\subsection{Size}
+	\caption[Population tuning test results]{Population tuning test results}
+\end{figure}
+
+\subsection{Tuning Diversity}
 
 \subsection{Coevolution}
 
