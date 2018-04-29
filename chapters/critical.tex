@@ -102,7 +102,7 @@ pains to explain the experiment configuration and setup.
 		crossover probability 0.7, mutation rate 2.7 and
 		(a) a simple fitness function mirroring \cite{10.1007/3-540-63173-9_61},
 		(b) an extended multi-objective fitness function incorporating a measure
-		of diversity.}
+		of diversity with the diversity weight set to 40\% of accuracy.}
 \end{figure}
 
 These parameters were evaluated and, as shown in Figure~\ref{fig:initial},
@@ -220,7 +220,7 @@ runs would take in excess of 2 hours.
 		crossover probability 0.7, mutation rate 2.7 and
 		(a) a simple fitness function mirroring \cite{10.1007/3-540-63173-9_61},
 		(b) an extended multi-objective fitness function incorporating a measure
-		of diversity.}
+		of diversity with the diversity weight set to 40\% of accuracy.}
 	\label{fig:500}
 \end{figure}
 
@@ -316,13 +316,14 @@ fitness function is unclear.
 	\end{subfigure}
 
 	\caption[Mutation rate test results]{Mutation rate test results;
-		population size 50, elitism, multi-objective fitness function linear
+		population size 50, elitism, multi-objective fitness function with diversity
+		weighting 40\% of the accuracy, linear
 		rank-based selection, single point
 		crossover probability 0.7, and
 		(a) 1 expected mutation per individual,
 		(b) 2 expected mutations per individual,
 		(c) 3 expected mutations per individual, and
-		(d) 4 expected mutations per individual}
+		(d) 4 expected mutations per individual.}
 	\label{fig:mut}
 \end{figure}
 
@@ -446,13 +447,14 @@ to drastically improve performance.
 	\end{subfigure}
 
 	\caption[Selection method test results]{Selection method test results;
-		population size 50, elitism, linear rank-based selection, single point
+		population size 50, elitism, multi-objective fitness function with diversity
+		weighting 40\% of the accuracy, single point
 		crossover probability 0.7, mutation rate 2.7 and
 		(a)(b)(c)\footnote[1]{(c) duplicated from Figure~\ref{fig:mut_3} for better direct
 	visual comparison} rank based
 	selection with skew 0.0, 0.5, and 1.0 respectively
-	, (d)(e)(f)(g) using tournament selection with tournament
-	size 10, 20, 30, and 40 respectively}
+	, and (d)(e)(f)(g) using tournament selection with tournament
+	size 10, 20, 30, and 40 respectively.}
 	\label{fig:select}
 \end{minipage}
 \end{figure}
@@ -525,11 +527,12 @@ operation is consistent before and after.
 		\begin{tabular}{ccccc}
 			\toprule
 			& \bfseries{Crossover Prob.} &
-			\bfseries{Perfect Solutions (\%)} &
-			\bfseries{Avg. Execution Time (s)} & \bfseries{Avg. Final Fitness}\\
+			\bfseries{Perf. Runs (\%)} &
+			\bfseries{Avg. Exec. Time (s)} & \bfseries{Avg. Final Fitness}\\
 			\midrule
 			(a) & 0.0 & 10 & 243 & 41\\
 			(b) & 0.5 & 3 & 245 & 41\\
+			Figure~\ref{fig:tour_20} & 0.7 & 13 & 231 & 42 \\
 			(c) & 1.0 & 3 & 249 & 41\\
 			\bottomrule
 		\end{tabular}
@@ -705,6 +708,8 @@ tailored directly for the binary arithmatic problem. With this we can explore
 a range of uses within the domain of dynamic problems.
 
 Elitism still uses conventional tests
+
+Change the virulence
 
 \subsection{Evolved 2-bit addition hardware}
 Talk about all the cool stuff, success rate etc analyise the given circuit
