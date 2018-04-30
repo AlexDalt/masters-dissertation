@@ -367,8 +367,8 @@ component), 0.5, and 1
 (completely linear) will highlight any impact this has on the system.
 
 Along with this variation, an experiment comparing current best
-selection with tournament selection of varying sizes from 10 (1/5th the population
-size) upto 40 (4/5ths the population size). The smaller tournament size
+selection with tournament selection of varying sizes from 10 (20\% the population
+size) upto 40 (80\% the population size). The smaller tournament size
 will discriminate less against lower performing individuals, and the
 larger the tournament the fewer poorly performing configurations will
 be selected for the next generation. This interplay could dramatically
@@ -626,7 +626,7 @@ fitness function could be beyond the point of diminishing returns. To explore th
 further trials varying the population size to explore how execution time and
 genetic algorithm performance is affected. Population sizes of 25, 50, 100, and 200
 were selected to span the bredth of potential choices. For each the tournament size
-scaled acordingly, constantly set to 2/5ths of the whole population (10, 20, 40, and
+scaled acordingly, constantly set to 40\% of the whole population (10, 20, 40, and
 80 respectively).
 
 \begin{figure}
@@ -672,8 +672,8 @@ scaled acordingly, constantly set to 2/5ths of the whole population (10, 20, 40,
 	\end{subfigure}
 
 	\caption[Population tuning test results]{Population tuning test results;
-	elitism, mutli-objective fitness function with diversity weightin 40\%
-	of the accuracy, mutation rate 3, tournament selection of size 2/5ths
+	elitism, mutli-objective fitness function with diversity weighting 40\%
+	of the accuracy, mutation rate 3, tournament selection of size 40\%
 	the population size, probability of single point crossover 0.7, and
 	(a) population size 25, (b)(duplicated) population size 50, (c) population size 100,
 	and (d) population size 200.}
@@ -708,13 +708,28 @@ solutions by a factor of 4.
 \subsection{Tuning Diversity}
 
 One aspect of the evolutionary proccess hitherto unexplored is the relative
-weighting given to the diversity measurement in the fitness function.
+weighting given to the diversity measurement in the fitness function. If
+set too high the genetic algorithm begins directing for novelty alone,
+accuracy is obscured and diversity reigns suprime. If set too low we reenter
+the domain of single-minded persuit of accuracy, one which frequently
+falls into evolutionary dead ends gracelessly halting progress. Diversity
+weighting is defined here as a fraction of the weighting given to accuracy.
+Accuracy exists in the range 0-48 for the 2-bit binary arithmatic problem,
+and from experimental results diversity usual reaches a maximum value of
+around 85. So for any diversity weighting larger than half the size of
+the accuracy weighting an individual does well to be maximally diverse,
+accuracy occuring as an afterthought. Armed with this knowledge an experiment
+was framed running evolutionary
+trails at a number of key diversity weightings, 0.0, 0.2, 0.4, and 0.6 accuracy weight.
+This shifts evolutionary pressure from completely focussed on accuracy to mostly
+completly focussed on diversity.
 
 \begin{figure}
 	\centering
 	\begin{subfigure}[ht]{0.49\textwidth}
 		\includegraphics[width=\textwidth]{div_0.png}
 		\caption{}
+		\label{fig:div_0}
 		\vspace{1em}
 	\end{subfigure}
 	~
@@ -722,6 +737,7 @@ weighting given to the diversity measurement in the fitness function.
 		\includegraphics[width=\textwidth]{div_20.png}
 		\caption{}
 		\vspace{1em}
+		\label{fig:div_2}
 	\end{subfigure}
 	~
 	\begin{subfigure}[ht]{0.49\textwidth}
@@ -734,13 +750,14 @@ weighting given to the diversity measurement in the fitness function.
 		\includegraphics[width=\textwidth]{div_60.png}
 		\caption{}
 		\vspace{1em}
+		\label{fig:div_6}
 	\end{subfigure}
 	~
 	\begin{subfigure}[ht]{\textwidth}
 		\centering
 		\begin{tabular}{ccccc}
 			\toprule
-			& \bfseries{Diversity Weighting} &
+			& \bfseries{Diversity Weighting (\% of Accuracy)} &
 			\bfseries{Perf. Runs (\%)} &
 			\bfseries{Avg. Execution Time (s)} & \bfseries{Avg. Final Fitness}\\
 			\midrule
@@ -752,10 +769,39 @@ weighting given to the diversity measurement in the fitness function.
 		\end{tabular}
 	\end{subfigure}
 
-	\caption[Diversity weighting test results]{Diversity weighting test results;}
+	\caption[Diversity weighting test results]{Diversity weighting test results;
+	population size 50, elitism, tournament selection of size 20, probability
+	of single point crossover 0.7, and a multi-objective fitness function with
+	diversity weighting set to (a) 0\%, (b) 20\%, (c) 40\%, and (d) 60\% the weighting
+	associated with accuracy.}
+	\label{fig:div}
 \end{figure}
 
 \todo prune away graphs placed on the same page
+
+Figure~\ref{fig:div} demonstrates the symptoms indicating existing on either side of
+balance of power within the fitness fuction between accuracy and diversity. With a
+weighting of 0 (Figure~\ref{fig:div_0}) the population hits two evolutionary dead ends,
+one at accuracy 34, which it eventually manages to summount and another at accuracy 40
+which it fails to improve beyond. The lack of diversity is also clear in the narrow
+variance in mean population accuracy. On the other end of the spectrum a weighting of
+60\% (Figure~\ref{fig:div_6}) achieved worse perfect solutions but was able to reach
+an averge ending accuracy of 41, and all improvements to fitness occured relatively
+regularly. This indicates a diverse population with only a small incentive to improve
+their accuracy. Balancing this, and improving on the previous best, decreasing the
+weighting from 40\% to 20\% seemed to better sit between the two extremes presented
+by Figure~\ref{fig:div_0} and Figure~\ref{div_6}.
+
+The reduced effectiveness of diversity at higher weightings is somewhat at odds with
+the point of view presented by (\todo cite the multi-objective). As previously mentioned
+however their implimentation was coupled with an effective pruning mechanism to dissuade
+mindless diversification for the sake of diversification. Also the context each multi-objective
+fitness function differs, evolutionary hardware and evolutionary programming are different
+animals each with distinct problems. Namely (\todo cite) present theirs as a mechanism
+for avoiding the run-away bloat that can happen with evolutionary programming where
+the program needlessly gets longer, whereas here we are spacially capped at the size of
+the FPGA, looking for a solution within it's confines. It is a subtle difference but
+could explain the disparity in results.
 
 \subsection{Coevolution}
 
