@@ -449,7 +449,7 @@ to drastically improve performance.
 	\caption[Selection method test results]{Selection method test results;
 		population size 50, elitism, multi-objective fitness function with diversity
 		weighting 40\% of the accuracy, single point
-		crossover probability 0.7, mutation rate 2.7 and
+		crossover probability 0.7, mutation rate 3 and
 		(a)(b)(c)\footnote[1]{(c) duplicated from Figure~\ref{fig:mut_3} for better direct
 	visual comparison} rank based
 	selection with skew 0.0, 0.5, and 1.0 respectively
@@ -539,14 +539,29 @@ operation is consistent before and after.
 	\end{subfigure}
 
 	\caption[Crossover probability experiment]{Crossover probability experiment;
-	(a) 0.0, (b) 0.5, and (c) 1.0}
+		population size 50, elitism, multi-objective fitness function with diversity
+		weighting 40\% of the accuracy, mutation rate 3, tournament selection of size
+		20, and probability of single point crossover set to (a) 0.0, (b) 0.5, and (c) 1.0.}
 	\label{fig:cross}
 \end{figure}
 
-\todo more here
-
-The best performance thus far is when the probability of crossover is set
-to 0.7.
+In Figure~\ref{fig:cross}, none of the trails produced results rivaling the
+initial crossover probability
+of 0.7. This behaviour could be a result of how crossover influences the underlying
+population structure; never performing crossover and usually performing crossover
+performed better than always performing crossover an performing or not with an equal
+probability. An explination for the performance at 0 probability could be that
+when the population develops without the threat of crossover there is an implicit
+encouragement to diversify as there is no punishment for creating a novel solution
+which crossover would destroy by mating with an uncompatible partner. Poor performance
+at equal probabilities could be a symptom of the same behaviour; when crossover
+may or may not happen with equal probabilities a population cannot adapt either way.
+The poor performance at 100\% probability would seem to disagree with this, unless you
+consider that crossover is ultimately a disruptive force. When crossover is guaranteed
+the population can only develop solutions durable in the face of random string swapping.
+0.7 provides a good balance where a population can develop with the assumption of
+crossover but there is a chance solutions can develop which rely on crossover not
+happening.
 
 \subsection{Elitism}
 With a mutation rate as high as shown here the effect of elitism is hightened.
@@ -575,19 +590,32 @@ elitism is turned off.
 		\end{tabular}
 	\end{subfigure}
 
-	\caption[Removing elitism test results]{Removing elitism test results}
+	\caption[Removing elitism test results]{Removing elitism test results;
+	population size 50, no elitism, multi-objective fitness function with
+	diversity weighting 40\% of the accuracy, mutation rate 3, tournament
+	selection of size 20, and probability of single point crossover set to 0.7.}
 	\label{fig:no_elitism}
 \end{figure}
 
+Clearly, as Figure~\ref{fig:no_elitism} demonstrates removing elitism is crippling.
+The population rarely, if ever, performs better than an accuracy of 28. From here
+the any path to a better viable solution is insurmountable, crippled by an aggresive
+mutation rate, which explored the search space with such vigor that no individuals
+performing well can survive due to their inherrent fragility. This dissagrees with
+(\todo cite the natural fault tollerence) which claims evolution naturally discoveres
+solutions resistant in the face of change; for binary arithmatic the solutions are
+too fragile to have such a resistance and require the support of elitism to prop
+up the best individuals. Resulting in solutions which do not have the same durability
+as a solution found without elitism, if one could ever be found.
+
 \subsection{Tuning Population Size \label{ss:pop_size}}
-25, 50, 100, 200 - tournament size scales too
 
 With the desire to cultivate a diverse population at the forefront of the parameter
 selection reasoning enlarging the population would improve the spread of solutions,
 and allow the evolutionary pressure on diversity to simultaneously mature and
 develop a bredth of solutions.
 Obviously increasing the size of the population has objective benifits in a statistical
-sense by casting the net wider, more individuals means a higher chance to stumble
+sense, by casting the net wider there is a higher chance to stumble
 accross the correct solution.
 But, this has diminishing returns; due to the diversity measurement incorporated into
 the fitness function the evalutation time grows with $O(n^2)$ complexity with the
@@ -596,7 +624,10 @@ population size.
 The increased population size from the experiments with a multi-objective
 fitness function could be beyond the point of diminishing returns. To explore this
 further trials varying the population size to explore how execution time and
-genetic algorithm performance is affected.
+genetic algorithm performance is affected. Population sizes of 25, 50, 100, and 200
+were selected to span the bredth of potential choices. For each the tournament size
+scaled acordingly, constantly set to 2/5ths of the whole population (10, 20, 40, and
+80 respectively).
 
 \begin{figure}
 	\centering
@@ -640,10 +671,44 @@ genetic algorithm performance is affected.
 		\end{tabular}
 	\end{subfigure}
 
-	\caption[Population tuning test results]{Population tuning test results}
+	\caption[Population tuning test results]{Population tuning test results;
+	elitism, mutli-objective fitness function with diversity weightin 40\%
+	of the accuracy, mutation rate 3, tournament selection of size 2/5ths
+	the population size, probability of single point crossover 0.7, and
+	(a) population size 25, (b)(duplicated) population size 50, (c) population size 100,
+	and (d) population size 200.}
+	\label{fig:pop}
 \end{figure}
 
+Unsurprisingly the larger population has the highest average final fitness,
+and proportion of evolutionary runs ending in a perfect solution but
+Figure~\ref{fig:pop} highlights an interesting revelation; Despite the evaluation
+function scaling with complexity $O(n^2)$ the increase in execution time is
+almost linear with the population. This indicates the poorly scaling portion of
+the evalutation function measuring population diversity counts for an insignificant
+minority of the execution time. The most aggressive increases in time are due to
+the aditional population members which need to be instantiated as FPGAs and
+fed the test data. This evidence against the claims made in (\todo ref earlier scaling
+claims) demonstrate that the scaling issues are localised to FPGA evaluation.
+
+For all population sizes achieving a best-case accuracy of 36 occured in a
+similar amount of time, however the larger populations were able to maintain
+this ascent up the evolutionary ladder better. This sudden insummountable
+evolutionary barrier for the smaller population sizes implies that the smaller
+populations were unable to cultivate a bredth of solutions early in execution
+and therefore encountered an evolutionary deadend, temporarily halting improvements.
+
+Moving forward a population size of 50 was selected. Clearly the population size
+of 200 is the best candidate, but the increase in persentage of perfect solutions is almost
+linear with the added execution time. In order to maintain momentum at this stage
+in the project the quicker execution was chosen, with the knowledge that one could
+quadrouple the population to increase the execution time and persentage of perfect
+solutions by a factor of 4.
+
 \subsection{Tuning Diversity}
+
+One aspect of the evolutionary proccess hitherto unexplored is the relative
+weighting given to the diversity measurement in the fitness function.
 
 \begin{figure}
 	\centering
@@ -713,7 +778,7 @@ Change the virulence
 
 \subsection{Evolved 2-bit addition hardware}
 Talk about all the cool stuff, success rate etc analyise the given circuit
-beyond simple correctness.
+beyond simple correctness. Diagram clearly one produced via crossover
 
 \begin{figure}
 	\centering
