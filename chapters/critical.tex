@@ -563,7 +563,7 @@ the population can only develop solutions durable in the face of random string s
 crossover but there is a chance solutions can develop which rely on crossover not
 happening.
 
-\subsection{Elitism}
+\subsection{Elitism \label{ss:elitism}}
 With a mutation rate as high as shown here the effect of elitism is hightened.
 The probability of a mutation crippling a design is relatively high and so a population
 without elitism is prone to climbing the evolutionary ladder just to be cast
@@ -805,31 +805,109 @@ could explain the disparity in results.
 
 \subsection{Coevolution}
 
-In a coevolutionary system there a host of problems that can disturb the gentle
-ballance between host and parasite, (red queen etc)
+Can we exchange the full problem testing system used thus far for a coevolved
+parasite population of evolutionarily targeted problems? In order to answer that
+question experiments emplying coevolution were conducted on the evolutionary
+system developed thus far. Experiments were conducted with a parasite problem
+size of 8, 16, and 32; and the best performing parameter choice was repeated
+without elitism.
 
-Thus far, in all experiments after a certain amount of time the average population
-fitness reaches a plateau and all improvements seem to come from the highest performing
-individual(s) with little impact in the overall population. This behaviour is indicative
-of a disengaged population
 \todo Talk about all the coevolutionary problems from Bullocks paper
 
+\begin{figure}
+	\centering
+	\begin{subfigure}[ht]{0.49\textwidth}
+		%\includegraphics[width=\textwidth]{coev_8.png}
+		\caption{}
+		\vspace{1em}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{0.49\textwidth}
+		\includegraphics[width=\textwidth]{coev_16.png}
+		\caption{}
+		\label{fig:coev_16}
+		\vspace{1em}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{0.49\textwidth}
+		\includegraphics[width=\textwidth]{coev_32.png}
+		\caption{}
+		\vspace{1em}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{0.49\textwidth}
+		\includegraphics[width=\textwidth]{coev_no_elit.png}
+		\caption{}
+		\label{fig:coev_16_no_elit}
+		\vspace{1em}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{\textwidth}
+		\centering
+		\begin{tabular}{ccccc}
+			\toprule
+			& \bfseries{Parasite Size} &
+			\bfseries{Perf. Runs (\%)} &
+			\bfseries{Avg. Execution Time (s)} & \bfseries{Avg. Final Fitness}\\
+			\midrule
+			(a) & & & & \\
+			(b) & 16 & 0 & 605 & 37 \\
+			(c) & 32 & 0 & 703 & 34 \\
+			(d) & 16 & 0 & 535 & 24 \\
+			\bottomrule
+		\end{tabular}
+	\end{subfigure}
+
+	\caption[Coevolution test results]{Coevolution test results;
+	population size 50, elitism, tournament selection of size 20, probability
+	of single point crossover 0.7, a multi-objective fitness function with
+	diversity weighting set to 20\%, and a coevolved parasite population where
+	each parasite is of size
+	(a) 8, (b) 16, and (c) 32 tests. (d) has a parasite consisting of 16 tests
+	but elitism is turned off.}
+	\label{fig:coev}
+\end{figure}
+
+In a coevolutionary system there a series of problems that can disturb the gentle
+ballance between host and parasite.
+In Figure~\ref{fig:coev} no coevolutionary system was capable of evolving a successful
+solution. Each had poor execution time and low final fitness.
+
+Earlier in this document coevolution was touted as a potential solution to the scaling
+problem, however comparing Figure~\ref{fig:coev_16} and Figure~\ref{fig:coev_16_no_elit}
+it is clear that without elitism the entire system becomes unable to produce a solution
+with even somewhat acceptable accuracy. This rehiterates the findings in subsection
+~\ref{ss:elitism} in this new context. In order for elitism to have any real impact
+with the binary addition problem members of the population have to be exhaustively tested
+against all possible problems to allow the elitism metric to keep the best performing
+individual regardless of the parasite they are paired against. This disrupts the
+notion that coevolution can be used to aid with the scaling issue and will be further
+discussed in Section~\ref{s:scaling}.
+
+In all the experiments with elitism activated after
+a certain amount of time the average population
+fitness reaches a plateau and all improvements seem to come from the highest performing
+individual(s) with little impact in the overall population. Although similar to
+tests not using a coevolutionary system this behaviour could be indicative
+of a disengaged population, one in which the parasite population becomes too aggresive
+and becomes unbeatable, no longer discriminating in the host population between FPGA
+configurations.
+
+\todo Change the virulence
+
+\subsection{Evolved 2-bit addition hardware}
 By now we have a relatively well performing evolutionary hardware system,
 tailored directly for the binary arithmatic problem. With this we can explore
 a range of uses within the domain of dynamic problems.
 
-Elitism still uses conventional tests
-
-Change the virulence
-
-\subsection{Evolved 2-bit addition hardware}
 Talk about all the cool stuff, success rate etc analyise the given circuit
 beyond simple correctness. Diagram clearly one produced via crossover
 
 \begin{figure}
 	\centering
 	\includegraphics[width=0.45\textwidth]{evolved_adder.png}
-	\caption{Can add}
+	\caption{Successful 2-bit binary addition evolved hardware}
+	\label{fig:2-bit}
 \end{figure}
 
 \section{Fault tollerance}
@@ -875,7 +953,7 @@ Different from normal Fault tollerance - this is the sticky fault model to find 
 \section{Dynamic problem optimisation}
 By introducing subtraction as a problem alongside addition, the relative weightings of a correct answer for each problem can be varied to explore dynamically changing problems. In the graph below the genetic algorithm starts with a perfect ADDer and 100\% of the fitness weighting assigned to correct ADDs, every 200 generations this shifts by 10\% towards SUBs.
 
-\section{Scaling}
+\section{Scaling \label{s:scaling}}
 In an effort to improve how an evolvable hardware system scales observing
 how the dynamics of a coevolutionary system vary as the number of parasites
 fluctuates could indicate a potential mechanism to reduce the number of
@@ -886,6 +964,23 @@ by the genetic algorithm as we reduce the size of the parasite should
 quantify the feesability of this idea.
 
 Scafolding vs non-scafolding, coevolution to improve scalability of finess evaulation (tests grow expontentiallly as input bits increase)
+
+Table of timings
+\begin{figure}
+	\centering
+\begin{tabular}{ccc}
+	\toprule
+	\bfseries{FPGA Size (Width x Height)} & \bfseries{Full test} & \bfseries{Coevolve (Size 16)}\\
+	\midrule
+	2x4 & & \\
+	4x4 & 238 & 535\\
+	6x4 & & \\
+	8x4 & & \\
+	\bottomrule
+\end{tabular}
+\caption{Execution time (s) for genetic algorithm opperating on different FPGA sizes with
+a full evaluation or a coevolved parasite population (without elitism).}
+\end{figure}
 
 The trouble with using coevolition to improve scaling is to stop elitism
 every individual has to be tested against the whole suite of problems, and
