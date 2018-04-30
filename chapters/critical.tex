@@ -850,7 +850,7 @@ without elitism.
 			\bfseries{Perf. Runs (\%)} &
 			\bfseries{Avg. Execution Time (s)} & \bfseries{Avg. Final Fitness}\\
 			\midrule
-			(a) & & & & \\
+			(a) & 8 & & & \\
 			(b) & 16 & 0 & 605 & 37 \\
 			(c) & 32 & 0 & 703 & 34 \\
 			(d) & 16 & 0 & 535 & 24 \\
@@ -882,7 +882,9 @@ with the binary addition problem members of the population have to be exhaustive
 against all possible problems to allow the elitism metric to keep the best performing
 individual regardless of the parasite they are paired against. This disrupts the
 notion that coevolution can be used to aid with the scaling issue and will be further
-discussed in Section~\ref{s:scaling}.
+discussed in Section~\ref{s:scaling}. Somewhat surprising is the ability of coevolution
+with a parasite which only contains 8 problems (only 4 of which are addition problems)
+to provide a semblance of positive evolutionary pressure.
 
 In all the experiments with elitism activated after
 a certain amount of time the average population
@@ -896,55 +898,101 @@ configurations.
 \todo Change the virulence
 
 \subsection{Evolved 2-bit addition hardware}
-By now we have a relatively well performing evolutionary hardware system,
-tailored directly for the binary arithmatic problem. With this we can explore
-a range of uses within the domain of dynamic problems.
-
-Talk about all the cool stuff, success rate etc analyise the given circuit
-beyond simple correctness. Diagram clearly one produced via crossover
 
 \begin{figure}
 	\centering
 	\includegraphics[width=0.45\textwidth]{evolved_adder.png}
-	\caption{Successful 2-bit binary addition evolved hardware}
+	\caption{Successful evolved solution for the 2-bit binary addition problem
+	\todo pen and paper test}
 	\label{fig:2-bit}
 \end{figure}
 
-\section{Fault tollerance}
+By now we have a relatively well performing evolutionary hardware system,
+tailored directly for the binary arithmatic problem. The tuned parameters
+are; population size 50, elitism, tournament selection of size 20,
+probability of single point crossover 0.7, and a multi-objective fitness function
+with a diversity weight set to 20\% the accuracy weight. With this configuration
+the evolutionary process takes, on average 238 seconds to span 15000 generations
+and 23\% of executions conclude with a perfect solution to the 2-bit binary addition
+problem. One such perfect FPGA configuration is outlined in Figure~\ref{fig:2-bit},
+with all superflous components not contributing to the answer manually pruned away.
+The graph detailing the average accuracy over time for this parameter choice is Figure
+~\ref{fig:div_2}.
+This novel solution calculates $b_0$ in the top right hand corner, and $c$ in the
+bottom left, this could well be because crossover encouraged this sort of division
+of space and labour. The circuity calculating $b_1$ is spread throught the device,
+highlighting the usefullness of crossover not being a certainty.
 
-The dynamic problem with the largest immediate impact is arguably that of
-a system experiencing faulty behaviour.
+With this platform we can explore
+a range of uses within the domain of dynamic problems.
+
+\section{Fault Tollerance}
+
+The dynamic problem with the largest immediate impact to consumer and industry
+alike is arguably that of a system experiencing faulty behaviour.
 With a tuned genetic algorithm, exploration into the capacity to dyanmically
 adapt the configuration in the face of such a changed or changing problem provides
-the oportunity to thoroughly test fault recovery and mitigation strategies.
+the oportunity to thoroughly test evoltionary driven fault recovery and mitigation
+strategies.
 
-Using the fault simulation framework built into the FPGA simulation a series
+Using the fault injection framework built into the FPGA simulation a series
 of targeted or randomly generated faults will be introduced to an in-progress
 genetic algorithm.
 
 \subsection{Simple Fault Recovery}
+
 By preloading the genetic algorithm with a hand designed 2-bit adder and then
-simulating a highly targeted critical fault withing the function of a CLB insight
+simulating a highly targeted critical fault within the function of a CLB, insight
 can be gained into the capcity of evolvable hardware to act as a fault recovery
 system in itself and provide a reliable method of recalibration should a device
 experience a fault which would otherwise render it useless.
 
 \begin{figure}
 	\centering
-	\begin{subfigure}[ht]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{perfect_adder.png}
+	\begin{subfigure}[ht]{0.49\textwidth}
+		%\includegraphics[width=.9\textwidth]{simple_faultpng}
+		\caption{}
+	\end{subfigure}
+	\\
+	\begin{subfigure}[ht]{0.49\textwidth}
+		\includegraphics[width=.9\textwidth]{perfect_adder.png}
+		\caption{}
+		\label{fig:perf}
 	\end{subfigure}
 	~
-	\begin{subfigure}[ht]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{perfect_adder_fault.png}
+	\begin{subfigure}[ht]{0.49\textwidth}
+		\includegraphics[width=.9\textwidth]{perfect_adder_fault.png}
+		\caption{}
+		\label{fig:recov}
 	\end{subfigure}
-	\caption{Fault recovery}
+	\caption[Simple evolutionary fault recovery]{Simple evolutionary fault recovery;
+	(a) the fitness overtime, the fault is injected at generation 1000,
+	(b) initial preloaded configuration,
+	(c) one of the mitigation configurations evolved}
 \end{figure}
 
-\subsection{``Sticky" Fault Mitigation}
-Evolutionary hardware can be used to recover from otherwise devastating faults. In the example below the outputs of the operation F within the CLB marked in red were clamped to a value representing an “undefined output”. Starting with the ideal configuration on the left and activating the fault, the genetic algorithm recognised the current solution as suboptimal and generated the configuration on the right.
+A textbook 2-bit adder was specified, outlined in Figure~\ref{fig:perf}. The
+population was seeded as this adder and the genetic algorithm allowed to operate.
+At generation 1000 a fault was injected in the CLB shaded red in Figure~\ref{fig:recov}.
+This fault clamped the output of the binary function in the cell to an undefined
+value and therefore crippled the accuracy of the configuration. The system was then
+allowed to evolve as normal in the presence of such a fault.
 
-Simulating a sticky fault by activating and deactivating a fault every 500 generations results in the fitness graph above on the right. When the fault is activated it has an adverse affect on fitness, but a solution is found which works when the fault is both active and inactive.
+Recovers a very high persentage of the time, especially compared to the original
+capacity to evolve an intial configruration. Evolutionary deadends are virtually
+erradicated by the efficient start point which gave the genetic algorithm a great
+deal of flexibility to orchestrate a solution from the bountiful resources.
+
+\subsection{``Sticky" Fault Mitigation}
+
+``Sticky" faults occur when certain unpredictable environmental conditions cause
+a fault to occur. This unpredictablility makes diagnosis and mitigation difficult.
+To simulate a sticky fault 2 randomly generated faults were injected into the simulation,
+and activated
+or deactivated every 500 generations. This initially has an adverse affect on
+accuracy, as is clear in Figure \todo something, for obvious reasons. But over time
+the system learned to cope and was capable of producing a specification which
+was not affected by the presence (or not) of the simulated fault.
 
 Sticky faults improve diversity and therefore improve training, maybe
 
