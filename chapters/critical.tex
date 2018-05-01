@@ -247,8 +247,8 @@ more than
 $2/3$rds that of the simpler one.
 
 Despite the improved performance in Figure~\ref{fig:500_no_div} moving forward
-further tuning will be performed on the parameters which produced Figure
-~\ref{fig:initial_div}. The larger population size in the higher performing experiments
+further tuning will be performed on the parameters which produced
+Figure~\ref{fig:initial_div}. The larger population size in the higher performing experiments
 produced an execution time which does not lend itself to exploration and
 itterative improvement. Population size will, however, be futher explored in
 subsection~\ref{ss:pop_size}.
@@ -790,7 +790,7 @@ an averge ending accuracy of 41, and all improvements to fitness occured relativ
 regularly. This indicates a diverse population with only a small incentive to improve
 their accuracy. Balancing this, and improving on the previous best, decreasing the
 weighting from 40\% to 20\% seemed to better sit between the two extremes presented
-by Figure~\ref{fig:div_0} and Figure~\ref{div_6}.
+by Figure~\ref{fig:div_0} and Figure~\ref{fig:div_6}.
 
 The reduced effectiveness of diversity at higher weightings is somewhat at odds with
 the point of view presented by (\todo cite the multi-objective). As previously mentioned
@@ -817,7 +817,7 @@ without elitism.
 \begin{figure}
 	\centering
 	\begin{subfigure}[ht]{0.49\textwidth}
-		%\includegraphics[width=\textwidth]{coev_8.png}
+		\includegraphics[width=\textwidth]{coev_8.png}
 		\caption{}
 		\vspace{1em}
 	\end{subfigure}
@@ -850,7 +850,7 @@ without elitism.
 			\bfseries{Perf. Runs (\%)} &
 			\bfseries{Avg. Execution Time (s)} & \bfseries{Avg. Final Fitness}\\
 			\midrule
-			(a) & 8 & & & \\
+			(a) & 8 & 0 & 740 & 34 \\
 			(b) & 16 & 0 & 605 & 37 \\
 			(c) & 32 & 0 & 703 & 34 \\
 			(d) & 16 & 0 & 535 & 24 \\
@@ -911,16 +911,19 @@ By now we have a relatively well performing evolutionary hardware system,
 tailored directly for the binary arithmatic problem. The tuned parameters
 are; population size 50, elitism, tournament selection of size 20,
 probability of single point crossover 0.7, and a multi-objective fitness function
-with a diversity weight set to 20\% the accuracy weight. With this configuration
+with a diversity weight set to 20\% the accuracy weight.
+This can be thought of as a modernised, experimentally tuned version of the
+parameters used in \cite{10.1007/3-540-63173-9_61}.
+With this configuration
 the evolutionary process takes, on average 238 seconds to span 15000 generations
 and 23\% of executions conclude with a perfect solution to the 2-bit binary addition
 problem. One such perfect FPGA configuration is outlined in Figure~\ref{fig:2-bit},
 with all superflous components not contributing to the answer manually pruned away.
 The graph detailing the average accuracy over time for this parameter choice is Figure
 ~\ref{fig:div_2}.
-This novel solution calculates $b_0$ in the top right hand corner, and $c$ in the
+This novel solution calculates $b\_0$ in the top right hand corner, and $c$ in the
 bottom left, this could well be because crossover encouraged this sort of division
-of space and labour. The circuity calculating $b_1$ is spread throught the device,
+of space and labour. The circuity calculating $b\_1$ is spread throught the device,
 highlighting the usefullness of crossover not being a certainty.
 
 With this platform we can explore
@@ -935,13 +938,14 @@ adapt the configuration in the face of such a changed or changing problem provid
 the oportunity to thoroughly test evoltionary driven fault recovery and mitigation
 strategies.
 
-Using the fault injection framework built into the FPGA simulation a series
+Using the fault injection framework built into the FPGA simulation, a series
 of targeted or randomly generated faults will be introduced to an in-progress
 genetic algorithm.
 
 \subsection{Simple Fault Recovery}
 
-By preloading the genetic algorithm with a hand designed 2-bit adder and then
+By preloading the genetic algorithm with a hand designed 2-bit adder
+and then
 simulating a highly targeted critical fault within the function of a CLB, insight
 can be gained into the capcity of evolvable hardware to act as a fault recovery
 system in itself and provide a reliable method of recalibration should a device
@@ -950,94 +954,203 @@ experience a fault which would otherwise render it useless.
 \begin{figure}
 	\centering
 	\begin{subfigure}[ht]{0.49\textwidth}
-		%\includegraphics[width=.9\textwidth]{simple_faultpng}
+		\includegraphics[width=\textwidth]{simple_fault.png}
 		\caption{}
+		\label{fig:fault}
+		\vspace{1em}
 	\end{subfigure}
 	\\
 	\begin{subfigure}[ht]{0.49\textwidth}
 		\includegraphics[width=.9\textwidth]{perfect_adder.png}
 		\caption{}
 		\label{fig:perf}
+		\vspace{1em}
 	\end{subfigure}
 	~
 	\begin{subfigure}[ht]{0.49\textwidth}
 		\includegraphics[width=.9\textwidth]{perfect_adder_fault.png}
 		\caption{}
 		\label{fig:recov}
+		\vspace{1em}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{\textwidth}
+		\centering
+		\begin{tabular}{ccc}
+			\toprule
+			\bfseries{Perf. Runs (\%)} &
+			\bfseries{Avg. Execution Time (s)} & \bfseries{Avg. Final Fitness}\\
+			\midrule
+			43 & 237 & 42 \\
+			\bottomrule
+		\end{tabular}
 	\end{subfigure}
 	\caption[Simple evolutionary fault recovery]{Simple evolutionary fault recovery;
-	(a) the fitness overtime, the fault is injected at generation 1000,
+	(a) the accuracy over time, the fault is injected at generation 1000,
 	(b) initial preloaded configuration,
-	(c) one of the mitigation configurations evolved}
+	(c) one of the fault mitigation configurations evolved.}
 \end{figure}
 
-A textbook 2-bit adder was specified, outlined in Figure~\ref{fig:perf}. The
-population was seeded as this adder and the genetic algorithm allowed to operate.
-At generation 1000 a fault was injected in the CLB shaded red in Figure~\ref{fig:recov}.
+A textbook 2-bit adder was specified, as outlined in Figure~\ref{fig:perf}. The
+population was seeded with this adder and the genetic algorithm allowed to operate.
+This constitutes the perfect accuracy experienced in Figure~\ref{fig:fault} until generation
+1000.
+At this point a fault was injected in the CLB shaded red in Figure~\ref{fig:recov}.
 This fault clamped the output of the binary function in the cell to an undefined
 value and therefore crippled the accuracy of the configuration. The system was then
 allowed to evolve as normal in the presence of such a fault.
 
-Recovers a very high persentage of the time, especially compared to the original
-capacity to evolve an intial configruration. Evolutionary deadends are virtually
-erradicated by the efficient start point which gave the genetic algorithm a great
+At 1000 generations, when the fault is injected, the performance drops to levels
+well below the regular evolutionary search. However the persentage of executions
+ending with a perfect solution is much higher than evolution without the presence
+of the fault (Figure~\ref{fig:tour_20}. This could be explained by examining the configuration which seeds
+the population; Figure~\ref{fig:perf} performs 2-bit addition using a fraction of the
+resources available to the FPGA. Only 7 CLBs are active and all of these are in the top
+half of the FPGA. This considerably more compact solution, even with an accuracy score
+of only 30, allows the genetic algorithm maximal space to experiment and improve fitness.
+Evolutionary deadends are virtually
+erradicated by the efficient start point which provides the genetic algorithm a great
 deal of flexibility to orchestrate a solution from the bountiful resources.
+This leads to frequent perfect recoveries, an even if the solution evolved is not perfect,
+there are drastic performance improvements over the faulty chip almost immediately after
+the fault occurs.
 
 \subsection{``Sticky" Fault Mitigation}
-
 ``Sticky" faults occur when certain unpredictable environmental conditions cause
-a fault to occur. This unpredictablility makes diagnosis and mitigation difficult.
-To simulate a sticky fault 2 randomly generated faults were injected into the simulation,
+a fault to occur, as such whether or not a fault is active oscilates seemingly at
+random. This unpredictablility makes diagnosis and mitigation difficult.
+To simulate a sticky fault, randomly generated faults were injected into the simulation,
 and activated
-or deactivated every 500 generations. This initially has an adverse affect on
-accuracy, as is clear in Figure \todo something, for obvious reasons. But over time
-the system learned to cope and was capable of producing a specification which
-was not affected by the presence (or not) of the simulated fault.
+or deactivated every 500 generations. 
 
-Sticky faults improve diversity and therefore improve training, maybe
-
-Different from normal Fault tollerance - this is the sticky fault model to find a design okay for all, instead the evolution happens when the fault is detected to recover
-
-\section{Dynamic problem optimisation}
-By introducing subtraction as a problem alongside addition, the relative weightings of a correct answer for each problem can be varied to explore dynamically changing problems. In the graph below the genetic algorithm starts with a perfect ADDer and 100\% of the fitness weighting assigned to correct ADDs, every 200 generations this shifts by 10\% towards SUBs.
-
-\section{Scaling \label{s:scaling}}
-In an effort to improve how an evolvable hardware system scales observing
-how the dynamics of a coevolutionary system vary as the number of parasites
-fluctuates could indicate a potential mechanism to reduce the number of
-test cases required per evaluation and therefore improve evaluation time.
-
-Evaluating the execution time and correctness of the solutions generated
-by the genetic algorithm as we reduce the size of the parasite should
-quantify the feesability of this idea.
-
-Scafolding vs non-scafolding, coevolution to improve scalability of finess evaulation (tests grow expontentiallly as input bits increase)
-
-Table of timings
 \begin{figure}
 	\centering
-\begin{tabular}{ccc}
-	\toprule
-	\bfseries{FPGA Size (Width x Height)} & \bfseries{Full test} & \bfseries{Coevolve (Size 16)}\\
-	\midrule
-	2x4 & & \\
-	4x4 & 238 & 535\\
-	6x4 & & \\
-	8x4 & & \\
-	\bottomrule
-\end{tabular}
-\caption{Execution time (s) for genetic algorithm opperating on different FPGA sizes with
-a full evaluation or a coevolved parasite population (without elitism).}
+	\begin{subfigure}[ht]{0.49\textwidth}
+		\includegraphics[width=\textwidth]{sticky_1.png}
+		\caption{}
+		\vspace{1em}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{0.49\textwidth}
+		\includegraphics[width=\textwidth]{sticky_2.png}
+		\caption{}
+		\vspace{1em}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{\textwidth}
+		\centering
+		\begin{tabular}{cccc}
+			\toprule
+			\bfseries{Fault(s)} & \bfseries{Perf. Runs (\%)} &
+			\bfseries{Avg. Execution Time (s)} & \bfseries{Avg. Final Fitness}\\
+			\midrule
+			1 & 7 & 242 & 40 \\
+			2 & 0 & 230 & 39 \\
+			\bottomrule
+		\end{tabular}
+	\end{subfigure}
+	\caption[Evolutionary ``sticky" fault recovery]{Evolutionary ``sticky"
+		fault recovery; faults oscilated between on and off every 500
+		generations, with
+		(a) 1 randomly generated fault and (b) 2 randomly generated
+	faults.}
+	\label{fig:sticky}
 \end{figure}
 
-The trouble with using coevolition to improve scaling is to stop elitism
-every individual has to be tested against the whole suite of problems, and
-without elitism the entire system breaks down. A high mutation rate is required
-to effectivly persue the solution. Really bloody bad lol.
+As one would anticipate the injection of a fault initially has an adverse affect on
+accuracy, as is clear in Figure~\ref{fig:sticky}, but eventually the damaging effects
+of the fault are lessened. With a single fault 7\% of the evolutionary runs
+were capable of evolving a solution which performed perfectly with or without
+the fault. There are comparable results with 2 randomly generated faults, despite
+never evolving a perfect solution the limitations presented by the faults diminished
+over time as the system learned to cope.
 
-\section{Evolution good}
-better than bruteforce
-mention things set out to do and address challenges
+The capacity to create solutions from scratch which are resilient to specific faults
+is clear. This agrees with \todo cite, who use learned fault models to generate
+hardware which can exist in the presence of a fault.
 
-\section{Evolution bad}
-Intermittent leap from primordeal soup
+\section{Dynamic Problem Optimisation}
+By introducing subtraction as a problem alongside addition, the relative weightings of a correct answer for each problem can be varied to explore dynamically changing problems. In the graph below the genetic algorithm starts with a perfect ADDer and 100\% of the fitness weighting assigned to correct ADDs, every 200 generations this shifts by 10\% towards SUBs.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.49\textwidth]{weighting.png}
+	\caption[Accuracy in the presence of dynamic probelm weightings]
+	{Accuracy in the presence of dynamic probelm weightings;
+		every 1500 generations the accuracy weightings in the fitness
+	function shifted 10\% away from ADDs and towards SUBs.}
+\end{figure}
+
+\section{Scaling \label{s:scaling}}
+
+The poor scaling qualities of evolvable hardware are a known issue, and
+unfortunately the system presented here is no different. Initial fears
+about the execution time of the evaluation function were assuaged by
+the experiments in Figure~\ref{fig:pop}. Despite a diversity measurement
+which scales with complexity $O(n^2)$ as the population increases, the
+execution time grows linearly. This is because the regions of the algorithm
+scaling slowly are minimal and will not reach noticable values until the
+population baloons to an unpractical size.
+
+The main culprit for lengthy execution time is clearly therefore the
+instantiation and evaluation of FPGAs. Eariler in this document coevolutionary
+techniques were toted as a technique to minimise the number of evaluations,
+and therefore minimise the FPGA evaluation time; Figure~\ref{fig:coev}
+clearly demonstrates data to the contrary. Despite fewer tests in
+Figure~\ref{fig:coev_8} and Figure~\ref{fig:coev_16} the execition times
+are considerably lengthier than the previous non-coevolutionary searches.
+Initially it was thought that the culprit for these poor execution times
+was the incorporation of elitism, which relied on conventional scoring
+methods to maintain consistent growth in accuracy. Turning this off
+resulted in Figure~\ref{fig:coev_no_elit}, which despite executing quicker,
+performed terribly and was still slower than the conventional evolutionary
+counterpart.
+
+An overlooked aspect of the coevolutionary system was the additional computation
+required to maintain this second population. This constitutes a huge execution
+overhead and ruins any capacity for coevolution to be used as a scaling mitigation
+strategy. These trails were, however, only conducted on relatively small problem
+sets. The 2-bit addition problem only has 16 trials for addition and 16 trails
+for subtraction.
+
+\begin{figure}
+	\centering
+\begin{tabular}{cccc}
+	\toprule
+	\bfseries{FPGA Size (Width x Height)} & \bfseries{Exec. Time (s)} & \bfseries{Test Cases}
+										  & \bfseries{Exec. Time per Test (s)} \\
+	\midrule
+	2x4 & 32 & 4 & 8\\
+	4x4 & 238 & 16 & 14\\
+	6x4 & 1473 & 64 & 23\\
+	8x4 & 8537 & 256 & 33\\
+	\bottomrule
+\end{tabular}
+\caption[Execution time for genetic algorithm opperating on different FPGA sizes]
+{Execution time (s) for genetic algorithm opperating on different FPGA sizes for
+a population of 50 over 15000 generations, the number of test cases is defined
+by the width of the FPGA.}
+\label{fig:size}
+\end{figure}
+
+Further exploring this scaling issue the size of the FPGA was varied.
+The evolutionary platform developed in conjunction with this document
+defines the scale of the problem being addressed by the size of the FPGA
+it is provided with. An FPGA of width $w$ coincides with $\frac{w}{2}$-bit arithmatic.
+As such as the size of the FPGA scales in Figure~\ref{fig:size} as does
+the problem, and therefor the number of test cases.
+
+The balooning execution time in Figure~\ref{fig:size} highlights that the
+scaling issue is domineered by the number of test cases in each problem. A linear increase in FPGA
+size from 8 CLBs (2x4) to 32 CLBs (8x4) sees a 267 fold increase in execution
+time, but a 64 times increase in the number of test cases each FPGA is evaluated
+against. The execution time for each trail scaled slower than the FPGA size.
+This clearly identifies the scaling issue as a symptom of the number
+of test cases, despite minor growth in evaluation time for larger FPGAs.
+As evolvable hardware starts tackling larger and larger
+problems coevolution could be used to limit the number of test cases, if the
+dramatic performance disadvatages can be overcome.
+
+
+Exploring the effects of a growing search space (as the FPGA size increases)
+is a well documented issue (\todo cite) beyond the scope of this thesis.
