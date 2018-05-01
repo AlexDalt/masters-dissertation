@@ -297,8 +297,10 @@ of classifying images of letters of size 5 by 6 pixels, the number of generation
 required to train the classifier dropped substantially as the number of allowed subsystems
 increased. More success was found applying this technique to a prosthetic hand controller
 which achieved better performance than the artificial neural net equivalent.
-
-\todo insert image of "partitioned training vectors" and "partitioned training sets" from "A scalable approach to evolvable hardware"
+A similar decomposition strategy has been proposed in \cite{1703646}, with the
+aim of reducing the number of generations needed to sufficiently explore the search
+space by automating the division of problems when the genetic algorithm appears to
+be making no progress and is stalling.
 
 These methods all deal with reducing the search space or dividing the problem into
 more manageable workloads. The problem remains with the scaling inefficiency in
@@ -311,13 +313,12 @@ for example, a 2-bit adder requires evaluation against all 16 ($2^{2 \cdot 2}$) 
 of 2 2-bit numbers, whereas for a 3-bit adder this value grows to 64 ($2^{2 \cdot 3}$).
 For practical evolution of larger circuits this requires some careful thought.
 
-\todo Generalized Disjunction Decomposition for Evolvable Hardware \cite{1703646}
-Addresses scaling issue, offers a new type of decomposition strategy.
-
-\todo Evolved Digital Circuits and Genome Complexity \cite{1508485}
-Improving scaling issue my investigating genotypic complexity, also considers shrinking search space
-
-\todo Extrinsic vs intrinsic evolution
+A novel approach to shrinking the search spaces involves using compression
+techniques to reduce the size of the genetic material. \cite{1508485} use
+Lempel-Ziv compression to limit the genome complexity and suggest directing
+research into evolvable hardware scaling to considering only ``active" areas
+of the genetic material and limit the search space to only include meaningful
+distinctions between circuits.
 
 \subsection{Application}
 
@@ -355,60 +356,67 @@ would otherwise be required.
 	\label{fig:antenna}
 \end{figure}
 
-The list of evolutionary hardware successes is long.
-
-\todo Evolutionary hardware design \cite{Sekanina}
-talk about case studies, logic synthesis \cite{Vasicek2011}, image filter evolution
-
-\todo Hybrid Evolvable Hardware for automatic generation of image filters \cite{HybridFilter}
-Architecture for fast image filters - no need to use a bitstream to reprogram
-
-A series of general purpose evolvable hardware chips have been developed for
-applications ranging from telecommunications circuits to robot controllers.
-Using tournament selection and elitism T. Higuchi et al. created a sensor
-driven robot controller, and developed an EHW chip capable of lossless image
+The list of evolutionary hardware successes in digital ciruits is long \cite{Sekanina};
+from logic circuit synthesis \cite{Vasicek2011} to high bandwidth image filter
+evolution \cite{10.1007/3-540-46004-7_26}\cite{HybridFilter}.
+Using tournament selection and elitism T. Higuchi et al.
+developed a custom evolvable hardware chip for use in telecomunications and robots \cite{HiguchiRW},
+claiming successful evolution of robot controlers and ciruits performing lossless image
 compression outperforming existing standards. All this was performed on off
-the shelf, components designed to accelerate the evolvable hardware process
+the shelf components designed to accelerate the evolvable hardware process
 for gate-level evolution \cite{HiguchiRW}. A similar success story with hardware
 designed for evolution takes the form of a prosthetic hand controller with
 a training time of only 10 minutes to adapt to a new user \cite{Kajitani1999AnEH}.
 
-\todo Phylogeny, Ontogeny, and Epigenesis: Three Sources of Biological Inspiration for Softening Hardware
+In the name of robustness, adaptability and complexity, POEtic tissue
+\cite{Tyrrell:2003:PTI:1766731.1766747} is
+an effort to build an extended evolvable hardware platform inspired by
+earilier work on phylogenesis (alaysis of the evolution individuals and species),
+ontogenesis (development of single-molecular organisms), and epigenesis
+(the learning over an idividuals lifespan) \cite{10.1007/3-540-63173-9_37}.
+These three traits inspire the genotype, mapping, and phenotype layer of the
+hardware system proposed. This system would act as an evolutionary hardware
+specific replacement for current FPGA systems.
 
-\todo POEtic Tissue: An Integrated Architecture for Bio-Inspired Hardware
-
-\todo Routine duplication of post-2000 patented inventions by means of genetic programming
-
-\todo Toward automated design of industrial-strength analog circuits by means of genetic programming
-
-\todo Challenges of evolvable hardware: Past present and the path to a promising future \cite{Haddow2011}
-
-\todo MEH: Modular Evolvable Hardware for designing complex circuits
+Adding to the literiture regarding the evolutionary scaling issue specifically
+in the domain of evolvable hardware
+Modular Evolvable Hardware (MEH) \cite{1299561} performs functional decomposition
+of the overall hardware requirements and then individual module evolution.
 
 \subsection{Arithmetic Circuits}
 
-\todo MULTIPLE-VALUED COMBINATIONAL CIRCUITS SYNTHESISED USING EVOLVABLE HARDWARE APPROACH
-Genetic programing to add numbers via gate trees
+Binary arithmatic has seen some use as a benchmarking problem for evolvable systems.
+The most common applications of genetic algorithms within the hardware space
+are as learning robot/prosthetics controllers or fast image filters, however
+in \cite{Miller_multiple-valuedcombinational} Kalganova et al. demonstrate the
+capacity for evolvable hardware to generate 1-bit addition circuits. These
+circuits are capable of adding upto 3 different variables and provide a carry-out
+bit of a full-adder.
 
-\todo Synthesis of Adder Circuit Using Cartesian Genetic Programming
-
-\todo Scalability problems of digital circuit evolution evolvability and efficient designs
+Successful evolution of robust 2-bit addition was achived by Miller et al. through
+the deployment of tournament selection \cite{TournamentAdder}. This was evolved
+in the presence of an imperfect fitness function and used the adjustable selection
+pressure of tournament selection to develop a fine-tuned genetic algorithm tailor
+made for various noise levels.
 
 \section{Dynamic Problems}
-\todo A little spiel about what dynamic are and why they are relevant
 
-\todo A self-organizing random immigrants genetic algorithm for dynamic optimization problems \cite{1703646}
-Improves diversity and escaping from local optima, dynamic optimisation problem
-
-\todo A Genetic Algorithm Approach to Dynamic Job Shop Scheduling Problem. \cite{Lin1997AGA}
-Different sort of dynamic problem - varying input, constant fitness criteria
-
-\todo Designing evolutionary algorithms for dynamic optimization problems\cite{Branke2003}
+Dynamic problems are challenges which change over time. These can take many
+forms, from scheduling \cite{LIN1997AGA}, to fault mitigation, and optimisation problems
+\cite{Branke2003}. The vast majority of evolutionary computing research focusses on
+static problems, but the dynamic varient are more indicative of real problems.
+In \cite{LIN1997AGA} Lin et al. develop a genetic algorithm
+which schedules continously arriving jobs. A series of dynamic qualities, including
+timing information job importance fed into a multi-objective fitness function. This
+approach improved over current deterministic job scheduling schemes. \cite{Branke2003}
+details the use of distinct sub-populations in a multi-population structure to
+improve diversity and better tackle the bredth of a dynamic problem.
 
 \subsection{Fault Tolerance}
-\todo Understanding inherent qualities of evolved circuits: Evolutionary history as a predictor of fault tolerance
 
-Fault tolerance in regards to hardware design is defined as a systems capacity to
+A dynamic problem specifically in the domain of evolvable hardware is fault
+tolerance.
+In hardware design, fault tolerance is defined as a systems capacity to
 remain functional despite component failure. This is usually in reference to
 post-fabrication faults which affect can effect chip yields, but evolutionary
 hardware also looks extensively into faults which occur some way into the
@@ -416,12 +424,19 @@ operational lifespan of a product; this can be component failures do to environm
 conditions or an aging device.
 
 Genetic algorithms by their nature produce designs which are resilient in the face
-of change. More fragile designs are often mutated into obscurity whereas ones with
+of change \cite{10.1007/3-540-46406-9_14}. More fragile designs are often
+mutated into obscurity whereas ones with
 natural fault tolerance endure. Amplifying the effects of this subtle pressure towards fault
 tolerant design is a mainstay of applied evolutionary hardware research.
 
-\todo Evolvable Hardware and its application to pattern recognition and fault-tolerant systems\cite{10.1007/3-540-61093-6_6}
-learning an XOR circuit, discussion of 2 applications: pattern recognition, ditch tracer
+In \cite{10.1007/3-540-61093-6_6} a robot welding controller designed to trace
+ditches comes equiped with an evolvable hardware backup system which is activated
+should a hardware fault be detected. Controllers such as these conventionally use
+FPGAs anyway; the economy of bespoke high-performance industrial requirements
+often make FPGAs the best choice (as detailed in Subsection~\ref{ss:FPGAs}). Because of
+this there is a prime opportunity to deploy evolvable hardware to recover from
+a fault which would otherwise require a compelete hardware overhaul. \cite{10.1007/3-540-61093-6_6}
+succesfully demonstrate such capacity.
 
 \todo Evolutionary techniques for fault Tolerance\cite{651463}
 Fault tolerant fitness function, fault tolerance by natural process, control for a robot evolved
@@ -429,6 +444,8 @@ Fault tolerant fitness function, fault tolerance by natural process, control for
 \todo On the Automatic Design of Robust Electronics Through Artificial Evolution
 Addresses problems of EHW only working at certain temperatures. Selection pressure
 for robustness added by executing fitness evaluation and different temperatures
+
+\todo Evolution of fault-tolerant and noise robust digital designs
 
 One of the potential problems with fitness function driven exploration comes in
 the form of environment specific effects. Somefolk et al. explored the problem
@@ -455,9 +472,6 @@ conducted their experiments on a simulated FPGA, attempting to evolve a quadratu
 decoder, a device which indicates
 the direction of rotation of a wheel. The system was evolved in the presence
 of the fault and was capable of operating perfectly despite it.
-
-\todo Addressing the Metric Challenge: Evolved versus Traditional Fault Tolerant Circuits\cite{4291951}
-Compairson peice
 
 \todo Evolviving Redundant Structures for Reliable Circuits\cite{4291954}
 Novel redundancy structures, challenge to tune evolution to find these novel structures
@@ -496,6 +510,8 @@ In experiments bombarding the chip with upto 350krad the system was usually able
 to recover functionality, and there were significant performance improvements over
 the unevolved comparison chip.
 
+\todo Evolutionary recovery of electronic circuits from radiation induced faults
+
 \todo Design of self-repairing control circuit for brushless DC motor based on evolvable hardware\cite{8046381}
 Radiation space damage, dynamic partial reconfiguration
 
@@ -518,9 +534,5 @@ tolerance which exploits flexibility. Many of the aforementioned modern
 fault techniques do little to improve the performance of faulty architectural
 processor components and rely on the ability to route around them.
 
-\subsection{Dynamic Optimisation}
-It has been well established that flexible systems can provide huge boosts to,
-not only circuit efficiency, but also performance.
-
-\todo Configurable memory systems for embedded many-core processors\cite{DBLP:journals/corr/BatesCM16}
-\todo FPGA deep learning accelerators
+\todo Addressing the Metric Challenge: Evolved versus Traditional Fault Tolerant Circuits\cite{4291951}
+Compairson peice
