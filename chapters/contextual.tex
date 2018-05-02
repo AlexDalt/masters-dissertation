@@ -41,57 +41,55 @@ More specifically, the concrete aims are:
 \end{quote}
 }
 
-Unlike conventional hardware design, evolvable hardware (EHW) takes
-advantage of machine learning techniques applied to
+Unlike conventional hardware design which relies on experts miticulously creating
+specfications, evolvable hardware (EHW) applies genetic algorithms to
 flexible hardware platforms to explore the design space of potential
-circuit solutions to hardware problems.
-Genetic algorithms are the key machine learning tool which takes advantage
-of the hardware flexibility to navigate an inherrently problematic search
-space.
+circuit solutions to specified hardware problems \cite{541893}.
+The search space of hardware designs in inherrently problematic to maneuver and
+genetic algorithms currently have the best track record.
 Traversing the set of solutions is of immense difficulty; the fitness landscape
 is discontinuous and
 search by random means often proves the most fruitful. By combining
 the robust non-determinism inherent in genetic algorithms and hardware design
 one can autonomously develop application specific hardware.
 
-\todo add a stack of citations
-
 \section{Evolvable Hardware}
-Evolvable hardware has explored the application of genetic algorithms to
-the domain of hardware design for decades now. Genetic algorithms come from the field of natural
+Decades of evolvable hardware research has explored the application of genetic algorithms to
+the domain of hardware design. Genetic algorithms come from the field of natural
 computing and use Darwinian-inspired probabilistic procedure to improve a population
-of solution's
-performance given a fitness criteria with evolutionary pressure. In the case of evolvable hardware,
-each individual is a bitstring which can be mapped onto a circuit design
+of bitstring's
+performance given a fitness criteria with evolutionary pressure \cite{Goldberg:1989:GAS:534133}.
+In the case of evolvable hardware,
+each individual bitstring can be mapped onto a circuit design
 and the fitness critera is rooted
 in the circuit's ability to perform some predefined function.
 
 The most common evolvable hardware arangements
 are built on Field Programmable Gate Arrays (FPGAs), these are immensely
-flexible integrated circuits and constitute a framework that the genetic
+flexible integrated circuits and constitute the substrate that the genetic
 algorithm creates a solution within. Each member of the population
 represents an FPGA configuration, and the fitness is based on the
 physical performance of the chip.
 
-Circuit design requires a huge amount of domain specific knowledge.
+Conventional circuit design requires a huge amount of domain specific knowledge.
 Applying machine learning to hardware design constitutes a potential
 offloading of this information, allowing a user to define the success
-criteria for a circuit and letting the machine construct a novel solution.
+criteria for a circuit and letting the machine automously construct a novel solution.
 Thus far there have been great successes deploying evolvable hardware to
 create user-specific prosthetic hand controllers \cite{Kajitani1999AnEH},
-image filters \cite{HybridFilter}, and creating arbitrary logic circuits
- \cite{Vasicek2011}. Although current solutions are limited by scaling
-issues.
+image filters \cite{HybridFilter}, creating arbitrary logic circuits
+\cite{Vasicek2011}, and even industrial robot controllers capable of fault recovery \cite{10.1007/3-540-61093-6_6}.
+Current solutions are severly limited by scaling issues.
 
 One of the advantages of genetic algorithms is also one of their largest
 weaknesses; they excel in generating strange and esoteric solutions,
 which can often outperform their more conventional hand-designed counterparts.
 An example of which (although outside the domain of circuit synthesis)
-comes from NASA, where an evolutionary algorithm designed an ironically
-alien antenna for use in space \cite{Antenna}, this antenna performed better
+comes from NASA, where an evolutionary algorithm designed an, ironically
+alien looking, antenna for use in space (Figure~\ref{fig:antenna})\cite{Antenna}, this antenna performed better
 than any hand designed counterpart.
-Unfortunately the sometimes counter-intuitive solutions, seemingly arbitrary
-automatic design decisions and incomprehensible structure results in a high
+Unfortunately the sometimes counter-intuitive solutions, with seemingly arbitrary
+critical design decisions and incomprehensible structures often result in a high
 performing object with no ability to perform direct
 visual comparison to known solutions and great difficulty understanding how a system
 works. Analysis of the resulting hardware produced by an evolvable hardware project rarely
@@ -101,7 +99,8 @@ The function defining the correctness of an evolvable system can balloon
 to an unwieldy size. For the algorithm to take into account efficiency, fault tolerance, size
 or any other desired circuit characteristic the fitness function has to
 become progressively more complex. Leading to computationally intensive
-evaluation procedures.
+evaluation procedures. A vast search space and rigorous evalution step
+are the main problems with scaling evolvable hardware beyond simple circuitry.
 
 Unfortunatley many applications of genetic algorithms are not as wildly
 successful as NASA's antenna.
@@ -114,16 +113,15 @@ this must be seriously explored.
 
 Despite being a relatively old field and serious developments in genetic
 algorithms (and machine learning in a wider sense) evolvable hardware has for
-the most part been dormant in recent years. I hope to explore how modern
+the most part stagnated in recent years. I hope to explore how modern
 genetic algorithm techniques can craft an algorithm capable of designing solutions
-to conventional hardware problems, such as simple arithmatic.
-\todo sprincle a few genetic algorithm improvement citations through this
+to conventional hardware problems, such as simple binary arithmatic.
 
 \subsection{Field Programmable Gate Arrays (FPGAs) \label{ss:FPGAs}}
 Field Programable Gate Arrays are the backbone of the vast majority of evolutionary
 hardware setups. They are a type of integrated circuit which can be
 configured after manufacture to perform a wealth of operations. Conventionally
-an FPGA design is specified in a HDL and then compiled into a chip-specific bitfile.
+an FPGA design is specified in a hardware design language and then compiled into a chip-specific bitfile.
 This bitfile is uploaded to the device and configures the internal components
 to perform the defined task.
 
@@ -132,8 +130,8 @@ thousands of Configurable Logic Blocks (CLBs).
 Each of these blocks takes input from their
 neighboring cells, has some internal binary function, and sends distinct outputs
 to each of their neighboring cells. The values sent to the output can be the
-result of the function or any of the inputs. The function, the input(s) to the function
-and which values are sent to each output are completely configurable. Figure~\ref{fig:fpga}
+result of the function or a direct mapping from any of the inputs. The function, the input(s) to the function
+and the values sent to each output are completely configurable. Figure~\ref{fig:fpga}
 shows the internal structure of a CLB and how they are arranged to form a simple FPGA.
 Modern FPGAs also have a host of more complex features, such as expansive input/output,
 wide data throughput, and look up tables.
@@ -144,11 +142,12 @@ be functionally identical to any printed digital circuit. They can be thought of
 as the polar opposite to an ASIC (Application Specific Integrated Circuit), in that
 rather than only performing one function their functionality can be modified at will.
 FPGAs share the power efficiency and execution proficiency of ASIC hardware, but
-the production costs do not scale as well as ASIC chips. However, ASIC development can
+are considerably more expensive at scale. However, ASIC development can
 be a lengthy and expensive process, one which often does not make financial sense,
-due to the scale of the chip requirements and associated small-scale manufacturing
+due to the limited number chips required and associated small-scale manufacturing
 costs. This pressure for highly specific cost effective hardware on a small scale
-driven mainstream FPGA development.
+driven mainstream FPGA development. One FPGA chip can service many specific
+design needs.
 
 \begin{figure}
 \centering
@@ -160,20 +159,21 @@ driven mainstream FPGA development.
 These immensly flexible circuits see wide use across industry. The most immediately
 obvious example is
 within firms developing more conventional integrated circuits who also ship accompanying
-software; in this case a team of engineers can develop software
-as the hardware is being developed in parallel by using an FPGA loaded with a beta version
-of chip. This cuts out the many month wait times for a finished chip to be fabricated.
-Recently FPGAs have seen a great deal of use as deep learning accelerators and crypto
-currency miners; this is because FPGAs
-configurations are cheeper to develop than ASIC hardware, highly application specific,
+software. In these cases a team of engineers can develop software
+while the hardware is developed in parallel, by using an FPGA loaded with a beta version
+of chip. This avoids the many month wait times for a finished chip to be fabricated.
+Recently FPGAs have seen a great deal of use as deep learning accelerators and cryptocurrency
+miners; this is because FPGAs
+configurations are cheeper to develop than ASIC hardware, are similarly highly application specific,
 and see huge performance and power consumption benefits over more general purpose
 hardware (GPGPUs for example). The flexibility also means itterative improvements
 can be made to coincide with new discoveries without the need to purchase new
 hardware. Similarly many industrial (and military) institutions require
-bespoke hardware solutions to highly specific problems; maybe a real-time high performance
+bespoke hardware solutions to small-scale specific problems; maybe there is a
+demand fora real-time high performance
 pump controller which will only be used in a handful of locations. In these situations,
 more often than not, ASIC
-development is too expensive and not worth the narrow application setting. This results in
+development is too expensive and not worth the narrow application setting. This demand has resulted in
 the widespread use of FPGAs
 in roles requiring an ASIC but without the market pressure to drive the development
 of one.
@@ -186,14 +186,15 @@ military-grade FPGAs.
 \subsection{Genetic Algorithms}
 The core of any genetic algorithm takes a randomly seeded population of binary strings
 and applies
-evolutionary pressure by performing a cycle of selection, crossover, and mutation
-to move the population towards potential solutions to a given problem. Beyond this there are many
+evolutionary pressure by performing a cycle of selection, (optionally) crossover, and mutation
+to move the population towards potential solutions to a given problem \cite{Goldberg:1989:GAS:534133}.
+Beyond this there are many
 variations, some of which will be explored in this thesis. The basic genetic algorithm is
 outlined in Algorithm~\ref{alg:basic}.
 
 \begin{algorithm}[t]
 	randomly initialise population $P$\;
-	\While{no perfect solution}{
+	\While{evolving}{
 		$P' \leftarrow Select( P )$\;
 		$Crossover( P' )$\;
 		$Mutate( P' )$\;
@@ -203,47 +204,41 @@ outlined in Algorithm~\ref{alg:basic}.
 	\label{alg:basic}
 \end{algorithm}
 
-The binary string associated to individual in the
-population is considered the genotype, and a phenotype what the string represents in the
+The binary string associated to an individual in the
+population is considered the genotype, and a phenotype is what the string represents in the
 context of the problem. In a biology a genotype is an organism's DNA, and a phenotype is
 the organism itself, the expression of the DNA. In the context of genetic algorithms
-the genotype is a binary string which is mapped onto a phenotype (often an FPGA configuration).
-Selection ($Select$) generates a new population by evaluating each member of the population then
-randomly choosing individuals from the old population with a probability proportional to
-it's evaluated fitness. Crossover ($Crossover$) randomly pairs each member of the new population
+the genotype is a binary string which is mapped onto a phenotype (in evolvable
+hardware, often an FPGA configuration).
+Selection ($Select$) generates a new population by evaluating each member of the
+original population then
+randomly choosing individuals from the old population based on some selection scheme,
+the most common will be outlined in Chapter~\ref{chap:technical}.
+Crossover ($Crossover$) randomly pairs each member of the new population
 and given a probability swaps the genetic material from one individual with another from a
-random point. Given an expected mutation-per-individual $m$, and population size
-$n$ the $Mutate$ function iterates over each bit in each bitstring flipping the bit with
-probability $\frac{m}{n}$. These simple processes coalesce into a high performance search
+random selected point in the bitstring. Given an expected mutation-per-individual $m$, and
+individual bitstring length
+$l$ the $Mutate$ function iterates over each bit in each bitstring flipping the bit with
+probability $\frac{m}{l}$. These simple processes coalesce into a high performance robust search
 procedure.
 
 \subsection{Genetic Algorithms with an FPGA Configuration}
 Given a mapping from binary string to FPGA configuration and an FPGA test bed, one can
 evaluate a population of bitstrings as the FPGA configuration to solve some digital
-problem. This is the root of evolutionary hardware. The bottleneck for physical evolvable
+problem. This framework is at the core of evolutionary hardware. The bottleneck for physical evolvable
 hardware is often the evaluation step, this involves uploading a series of configurations
 to the FPGA and extensively testing each. When each upload takes in the order of
 multiple seconds the evolution process can be laborious. To resolve this problem
 many platforms simulate an FPGA until a design is chosen to be deployed, this reduces
-training time aggressively.
+training time aggressively, and is the direction this project has taken.
 
 \section{Dynamic Problems}
-A problem with evaluation critera which shift over time is termed a dynamic problem. Designing
+A problem with evaluation critera which shifts over time is termed a dynamic problem. Designing
 evolutionary hardware robust to this set of problems is of considerable benefit as
 dynamic problems span a class of practical but notoriously problematic challenges including
 real-time optimisation, and fault tollerance.
 
 \subsection{Hardware Faults}
-One popular use of dynamic problems in evolutionary hardware is employed to breed
-fault tolerance into a
-design. This involves repeatedly turning on and off faults in the FPGA evaluation to
-create a design both robust to faults and not reliant on faults. Another fault resilience
-techniques requires evaluating the configuration
-against a fault-free FPGA and then combining the result with evaluation runs on FPGAs
-simulating known frequent faults. This extension of the fitness function (rather than
-mid-execution modification) removes this approach from the domain of dynamic problems,
-but it is worth noting as an alternate method to improve toughness.
-
 Hardware faults are catastrophic for electronic devices. A relatively short life span is
 mostly accepted, and is relatively benign in many areas. But when the cost of replacement is
 extraordinarily high or the scale of the operation is large enough there are huge benifits
@@ -264,38 +259,48 @@ Individually this is of no great concern, but when compounded across an entire d
 server recovery and replacement becomes a primary concern for the management of
 such an establishment.
 
-As previously stated predefined faults have been used to
+One popular use of dynamic problems in evolutionary hardware is designed to breed
+fault tolerance into a
+design. This involves repeatedly turning on and off faults in the FPGA evaluation to
+create a design both robust to faults and not reliant on faults \cite{651463}. Another fault resilience
+techniques requires evaluating the configuration
+against a fault-free FPGA and then combining the result with evaluation runs on FPGAs
+simulating known frequent faults \cite{Keymeulen2000}. This extension of the fitness function (rather than
+mid-execution fitness function modification) removes this approach from the domain of dynamic problems,
+but it is worth noting as an alternate method to improve circuit reliability.
+
+All of these methods require predefined faults and can only be used to
 develop evolveable hardware tolerant to specific faults. This requires a huge amount of knowledge
 about the underlying hardware implementation and the frequency and severity of faults to generate
 accurate fault models. This
 is an important avenue of exploration but with evolvable hardware there is a missed
 opportunity with a system capable of quick iterative improvements to work around
-a problem as it occurs. 
+a problem as it occurs. This idea has been briefly explored in \cite{10.1007/3-540-61093-6_6}.
 
 \subsection{Dynamic optimisation}
-Another area of dynamic problems with evolutionary hardware that has seen success involves
-extending the evaluation function when an perfect solution has been found. For example,
+Another sucessful area of dynamic problems with evolutionary hardware involves
+extending the evaluation function when an perfect solution has been found \cite{785435}. For example,
 one could successfully evolve an audio filter and then incorporate a measure of "smallness"
 into the fitness. This would add evolutionary pressure to not only be correct but also
 be as small as possible.
 
 Little work has been done exploring the reaction of evolvable hardware to tackling
 related-but-not-identical problems (addition and subtraction, for example), and observing
-the effect varying
-the relative benifits for correct answers to either has on the performance of each problem.
+the effect of varying
+the relative benifits for correct answers of either on the performance of the circuit for each problem.
 Information in this domain could
 drive development of systems capable of dynamically optimising in real-time
 under shifting conditions.
 
 \section{Project Aims}
 
-The broad aims of this project is to develop an improved evolvable hardware
+The broad aims of this project are to develop an improved evolvable hardware
 platform capable of effectively addressing dynamic problems. More specifically:
 \begin{itemize}
 	\item Apply the genetic algorithm from \cite{10.1007/3-540-63173-9_61} to
 		the binary arithmatic problem.
 	\item Combine state of the art genetic algorithms to improve
-		evolvable hardware performance on binary arithmatic.
+		evolvable hardware performance for binary arithmatic.
 	\item Explore the application of evolvable hardware to dynamic
 		problems, including FPGA faults and weighted binary arithmatic.
 	\item Develop a specialsied FPGA simulator to act as the evaluation
@@ -304,15 +309,15 @@ platform capable of effectively addressing dynamic problems. More specifically:
 \end{itemize}
 
 \section{Project Challenges}
-The project is not without challenges
+The project is not without challenges:
 \begin{itemize}
 	\item There are few ways to evaluate individuals and population health beyond how
 		correct they are, so understanding why a system works or does not work may
 		be difficult.
 	\item The issue of scaling will slow development of anything other than
-		trivial problems (2-bit addition/subtraction).
+		trivial problems (2-bit addition and subtraction).
 	\item FPGA configurations for a variety of problems investigated here are very fragile, in the
-		context of evolution, minor mutations could be disastrous.
+		context of evolution. Frequent mutations could be disastrous.
 	\item Moreso than in many evolutionary contexts the prospect of evolutionary deadends
 		and dominating local optima will need to be addressed.
 \end{itemize}

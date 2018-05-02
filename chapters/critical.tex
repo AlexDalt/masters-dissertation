@@ -55,7 +55,7 @@ speed with which a configuration can be instantiated and evaluated.
 
 \todo actually this
 
-\section{GA Parameter Tuning}
+\section{Genetic Algorithm Parameter Tuning \label{s:ga_tune}}
 All inital genetic algorithm parameters were set mirroring the parameter choice
 of \cite{10.1007/3-540-63173-9_61};
 a population size of 50, with elitism, linear rank-based selection, the probability
@@ -490,6 +490,8 @@ Balancing these two facets of tournament selection, a tournament size
 of 20 allows for a search procedure directed enough to find optimal solutions
 and with enough random influence to maintain a wide population.
 
+\todo cite tournament selection with binary arithmatic problem
+
 \subsection{Crossover}
 Crossover works well in this context, the nature of the mapping between genotype
 and phenotype means any crossover can provide benifits to both mating pairs and
@@ -820,6 +822,7 @@ without elitism.
 		\includegraphics[width=\textwidth]{coev_8.png}
 		\caption{}
 		\vspace{1em}
+		\label{fig:coev_8}
 	\end{subfigure}
 	~
 	\begin{subfigure}[ht]{0.49\textwidth}
@@ -832,6 +835,7 @@ without elitism.
 	\begin{subfigure}[ht]{0.49\textwidth}
 		\includegraphics[width=\textwidth]{coev_32.png}
 		\caption{}
+		\label{fig:coev_32}
 		\vspace{1em}
 	\end{subfigure}
 	~
@@ -989,6 +993,7 @@ experience a fault which would otherwise render it useless.
 	(a) the accuracy over time, the fault is injected at generation 1000,
 	(b) initial preloaded configuration,
 	(c) one of the fault mitigation configurations evolved.}
+	\label{fig:simple_fault}
 \end{figure}
 
 A textbook 2-bit adder was specified, as outlined in Figure~\ref{fig:perf}. The
@@ -1082,7 +1087,10 @@ By introducing subtraction as a problem alongside addition, the relative weighti
 	{Accuracy in the presence of dynamic probelm weightings;
 		every 1500 generations the accuracy weightings in the fitness
 	function shifted 10\% away from ADDs and towards SUBs.}
+	\label{fig:weight}
 \end{figure}
+
+\todo talk about Figure~\ref{fig:weight}
 
 \section{Scaling \label{s:scaling}}
 
@@ -1105,7 +1113,7 @@ are considerably lengthier than the previous non-coevolutionary searches.
 Initially it was thought that the culprit for these poor execution times
 was the incorporation of elitism, which relied on conventional scoring
 methods to maintain consistent growth in accuracy. Turning this off
-resulted in Figure~\ref{fig:coev_no_elit}, which despite executing quicker,
+resulted in Figure~\ref{fig:coev_16_no_elit}, which despite executing quicker,
 performed terribly and was still slower than the conventional evolutionary
 counterpart.
 
