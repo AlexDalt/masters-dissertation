@@ -52,9 +52,9 @@ different and new evolvable hardware processes.
 \section{Design}
 The high level design choices have been made to improve development time
 and discern insights into evolutionary hardware with dynamic problems and
-the scaling issues involved.
-
-\todo talk about some problems common with GA design
+the scaling issues involved. The system should be flexible so parameters can
+be altered between searches and infomation
+about the population performance should be offered as the genetic algorithm runs.
 
 \subsection{Phenotype to Genotype Mapping}
 The mapping from binary string to FPGA configuration is one of the first design
@@ -72,13 +72,17 @@ The least significant byte defines all the outputs, 2 bits per neighbour
 and west), where a 0 is defined as a direct mapping from the northern input
 to that output, a 1 means the eastern input is used, 2 the southern, and 3
 western.  A description of
-the complete string can be found in Figure~\ref{fig:bin}.
-An output cannot be mapped to it's input, in the situation that the
+the complete string can be found in Figure~\ref{fig:bin}. In this example
+the cell performs an XOR operation on the inputs coming from the cells to
+the north and south. The southern input is mapped to the eastern output,
+and the norther input is mapped to the western output. Both the northern
+and southern outputs send the output of the XOR operation as under my
+scheme
+an output cannot be mapped to it's input, in the situation that the
 number associated with an output refers to the input coming from the same
-direction the function $F$ is used as input instead, \todo this is what
-occurs in S out blah blah blah.
-
-\todo explain what the bitstring in fig:bin actually represents
+direction the function $F$ is used as input instead. As the northen output
+is specified as 00 (NORTH) and the southern input is specified as 10 (SOUTH)
+they both recieve the output of the function.
 
 The most significant byte describes the function $F$. The low 2 bits describe
 the first input (00 $\rightarrow$ north, 01 $\rightarrow$ south, 10
@@ -159,12 +163,10 @@ binary strign required to describe an FPGA of width $w$ and height $h$ is $2wh$
 bytes long.
 
 This mapping was chosen because it is loosely in line with the number of bits
-required by \cite{10.1007/3-540-63173-9_61}. It allows concise expression of
+required by \cite{10.1007/3-540-63173-9_61} and it allows concise expression of
 the FPGA. The order in which cells are defined also follows
 \cite{10.1007/3-540-63173-9_61}, and means any crossover occurring tends to keep
 the horizontal sections consistent with each other.
-
-\todo include mapping order diagram and potential crossover diagram
 
 \subsection{Problem Choice}
 
@@ -178,13 +180,19 @@ an interesting problem, which would require a great deal of genetic algorithm tu
 
 With a desire to explore dynamic problems addition also opens up the possibility of
 introducing subtraction as a related but distinct problem. To this end evaluation
-will consist of checking both addition and subtraction with weightings which can
+will consist of checking both addition and subtraction, both of these will have an
+associated weighting which can
 vary over time.
 
-\todo what weightings?
-
-\todo Talk about the complexity of the problem, the need to plan ahead, channels crossing over,
-individual simplicity but the need to chain together
+Dispite appearing to be a trivial problem, 2-bit binary arithmatic has a number of
+neuances which might hinder the progress of a genetic algorithm. A greedy genetic
+algorithm could quickly achieve a relatively good accuracy but through uneconomic
+resource use is completely unable to progress. Genetic algorithms struggle with backtracking
+and would prefer to blindly hold on to the current best solution mindlessly exploring
+related FPGA configurations. The arithmatic probelm also requires information to be
+chained together, the result from one single binary calculation impacts the next binary
+calculation so a genetic algorithm needs to demonstrate the capacity to structure
+components and chain together functionality.
 
 \subsection{Evaluation in the Genetic Algorithm}
 
@@ -247,15 +255,6 @@ configurations which receive wildly different scores in two evaluations.
 
 \subsection{Fitness Landscape}
 
-\begin{figure}
-\centering
-\includegraphics[width=.7\textwidth]{landscape.png}
-\caption{Sampled fitness landscape}
-\label{fig:landscape}
-\end{figure}
-
-\todo evolution eye-view on ruggedness, redo this entire section
-
 When tackling a genetic problem it is important to have an underlying appreciation
 for the space of potential answers and how these are related to one another.
 In the case of evolutionary hardware
@@ -266,14 +265,48 @@ is 32 bytes long, therefore there are $2^{32\cdot8}$ potential solutions, any
 enumerated bruteforce search processes can only uncover a
 miniscule, uninteresting and unrepresentative corner of the fitness landscape
 within any reasonable timeframe.
-In order to gain an understanding for the cartography of the fitness landscape
-13000 randomly generated configurations were evaluated and then ordered based
-their genetic material, the results are graphed in Figure~\ref{fig:landscape}.
 
-\todo find a reference talking about GAs being good when you have little understanding
-of underlying fitness landscape and topography, crazy hyper-dimentional shapes
+Furthermore each CLB has 7 axes of freedom, multiplying this across the entire 4x4 FPGA
+there are 112 dimensions. Visualsing a fitness landscape which exists in
+112 dimensions is near impossible. In order to gain a better understanding
+of the nature of the underlying landscape a measure of the systems ``ruggedness"
+is taken, as defined by Barnett \cite{barnett2008ruggedness}. For mutation rate
+$M$, fitness function $f()$, mean mutant fitness function $\mu()$, covariance and
+variance functions $cov()$ and $var()$, Equation~\ref{equ:rugged} details how to
+calculate ruggedness at a specific mutation rate, $\rho(M)$.
 
-In keeping with problems often tackled by genetic algorithms this landscape is discontinuous
+\begin{equation}
+	\rho(M) = \frac{cov(f(g),\mu(g)))}{var(f(g))}
+	\label{equ:rugged}
+\end{equation}
+
+This exercise highlights the nature of the underlying landscape and the function
+traversing it.
+This ruggedness measure is equivalent to the correlation between an individuals
+fitness and the fitness of any offspring it produces\footnote{The genetic algorithm
+used to gather the data was calibrated with; a population
+size of 50, elitism, tournament selection of size 20, probability of crossover 0,
+a multiobjective-fitness function incoperating diversity weighted at 20\% accuracy,
+(see Section \todo ref), and the mutation rate varied between experiments. This parameter
+configuration was arrived at after the experimentation in Chapter~\ref{chap:evaluation}.}.
+Figure~\ref{fig:rugged} outlines the relationship between the mutation rate and
+ruggedness. Even with a small number of mutations the correlation between parents
+and their children is ambysmally small. As the mutation rate aproaches 3 this correlation
+reaches a value of 0.1. This highlights the expected failure rate in an individuals children
+and the infrequency of viable individuals.
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{rugged.png}
+	\caption{Landscape ruggedness at different mutation rates}
+	\label{fig:rugged}
+\end{figure}
+
+\todo fix this next paragraph
+
+In keeping with problems often tackled by genetic algorithms the landscape implied by Figure~\ref{fig:rugged}
+is discontinuous
 and random. Despite this however,
 the landscape is one which doesn't necessarily lend itself to easy searching via genetic algorithm.
 It is covered in local optima and the peaks are sharp, unpredictable, and not uniformly
@@ -282,7 +315,7 @@ be fragile, not taking much mutating to be cast back into the primordial soup.
 
 An ideal fitness landscape for genetic algorithms is one which has gentle hills
 which can be ascended, where aggressive mutation does little to render a potential
-solution inert. However, the landscape hinted at in Figure~\ref{fig:landscape} is
+solution inert. However, the landscape hinted at in Figure~\ref{fig:rugged} is
 one which there are few effective mechanisms to navigate, the current ideal resting
 with a highly targeted genetic algorithm.
 
@@ -355,7 +388,7 @@ equivalent (or even improved) solutions.
 Selection will also incorporate elitism, this directly copies the best individual
 to the next population and ensures that the most fit member
 of the population is preserved unmolested by mutation. The fragility of potential
-solutions has been highlighted by Figure~\ref{fig:landscape} and highlights the
+solutions has been highlighted by Figure~\ref{fig:rugged} and highlights the
 need to employ some preservation mechanisms.
 
 \paragraph{Multi-objective Fitness Function}
@@ -372,7 +405,7 @@ incorporate the number of cells inactive in a design into the evaluation
 procedure.
 
 Given the large volume of local optima and irregular peaks in the fitness
-landscape as demonstrated by Figure~\ref{fig:landscape}, it may be prudent to
+landscape as demonstrated by Figure~\ref{fig:rugged}, it may be prudent to
 also incorporate some measure of diversity. \cite{deJong:2001:RBP:2955239.2955241}
 proposes a using a
 distance measure from each individual to each other individual in the population

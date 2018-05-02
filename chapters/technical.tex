@@ -58,15 +58,17 @@ stage a new population has been created, sampled from the old.
 	\label{eq:roulette}
 \end{equation}
 
-\todo fix crossover definiton
-
-\paragraph{Crossover}
-allows two strings in the new population to reproduce. Members of the breeding
-population are paired up at random, and there is a given probability that each
-pair performs crossover. For each mating pair, a number, $k$,
+\paragraph{Crossover} is an optional part of the core genetic algorithm definition
+provided by Goldberg \cite{Goldberg:1989:GAS:534133}. It
+allows two strings to act as parents and share genetic material for an individual
+in the new generation. Given a crossover probability, each slot in the new population
+has a chance to be filled by an individual in the previous generation selected
+by the given selection mechanism. If crossover is selected as the means to
+fill a position in the new population two parents are selected by the genetic
+algorithm selection mechanism,
+, a number, $k$,
 is selected such that $1 \leq k \leq l$, where $l$ is the population string length.
-Both individuals, then swap every bit from position $k$ onwards. This stage can be
-omitted for simpler evolution.
+Both individuals, then swap every bit from position $k$ onwards.
 
 \paragraph{Mutation}
 occurs after reproduction and crossover. Given a population of strings each of length
@@ -93,23 +95,20 @@ Goldberg et al. offer a comparison of common selection schemes for use in geneti
 algorithm reproduction \cite{GOLDBERG199169}. They compared proportionate
 selection, rank based selection, and tournament selection, amongst others.
 
-\todo improve proportionate selection definition: alows an individual to be chosen
-as a parent with probability proportional to fitness score
-
-\paragraph{Proportionate selection} is the set of selection mechanisms which includes
-roulette wheel selection. All proportional selection schemes tie the probability of
-an individual being selected for the next generation to some function of their fitness
-function, $f$.
-
-\todo expand rank selection more be more verbose
+\paragraph{Proportionate selection} is any selection scheme in which the probability
+of an individual being selected as a parent is proportional to their fitness score.
+This includes roulette wheel selection.
 
 \paragraph{Rank selection} orders each member of a population by their
-fitness. Then associates the probability of each individual being selected as
-parent to their position in the ranking. This serves as
+fitness. Then the probability of each individual being selected as
+parent is proportional to their position in the ranking. This serves as
 a way to "flatten" out the selection curve, and reduces the influence of
-a huge spread of individual fitness.
+a huge spread of individual fitness. Commonly a linear ranking is chosen,
+in this the most fit individual is twice as likely to be selected
+as a parent as the individual with median fitness.
 
-\paragraph{Tournament selection} operates by randomly selecting a subset of the
+\paragraph{Tournament selection} is a type of proportionate selection,
+which operates by randomly selecting a subset of the
 population and the best individual from this set is chosen for further genetic
 processing. Tournaments can be as small as consisting of 2 individuals, or much
 larger.
@@ -123,17 +122,16 @@ much they are better). Tournament selection discriminates intensley within a giv
 tournament but the selection process to assemble the tournament is uniformally
 random, so depending on the tournament size this can be highly descriminatory
 (large tournament size) or minimally descriminatory (small tournament size).
+At certain tournament sizes tournament selection performs similarly to roulette
+wheel selection.
 For evolvable hardware proportionate selection sees little use due to the range
 of fitness values often associated with members of the population, rank and
 tournament selection are used frequently.
 
-\todo tournament selection is a type of proportionate selection and performs similarly
-depending on the size
-
 \subsection{The Fitness Function}
 
 \begin{equation}
-	f(x) = \sum_{i=1}^{o} w_i f_i(x)
+	f(x) = \sum_{i=1}^{z} w_i f_i(x)
 	\label{equ:multi-obj}
 \end{equation}
 
@@ -142,8 +140,8 @@ measuring correctness (the original fitness functon)
 and any other measurements we can deploy evolutionary pressure to optimise for
 additional parameters \cite{deJong:2001:RBP:2955239.2955241}. For an individual
 $x$, a set of functions measuring distinct desirable aspects of individual
-$\{f_1,f_2,\ldots,f_o\}$, and a set of weightings associated with each function
-$\{w_1,w_2,\ldots,w_o\}$ the new fitness function $f(x)$, is given by
+$\{f_1,f_2,\ldots,f_z\}$, and a set of weightings associated with each function
+$\{w_1,w_2,\ldots,w_z\}$ the new fitness function $f(x)$, is given by
 Equation~\ref{equ:multi-obj}.
 
 This technique has been used to expand the success criteria for a evolvable hardware configuration
@@ -174,9 +172,7 @@ The evolutionary pressure on the problem proposers pushes them to be as difficul
 to solve as possible, therefore emphasising problems the population of solvers
 find difficult. This proves a highly effective distinguishing tool, and produces
 problem proposers which create hard problems specifically tailored to the population
-of problem solvers.
-
-\todo ref this coevolution acting as distinguishers
+of problem solvers \cite{HILLIS1990228}.
 
 Extending the parallel with nature, one can modify the virulence of the parasitic
 coevolutionary population. Virulence is a measure of the hostility of the aggressor.
@@ -192,7 +188,7 @@ successfully solve any problem, even if it could have solved some easy ones.
 When individuals can no longer
 differentiate themselves and push the population up the evolutionary ladder,
 the coevolved populations are said to have disengaged.
-By modifying the fitness function (\todo insert figure) Bullock et al. \cite{6790490}
+By modifying the fitness function Bullock et al. \cite{6790490}
 discouraged maximally
 virulent parasites. This encourages populations to stay engaged, and improved the
 quality of discovered solutions.
@@ -206,7 +202,7 @@ the flexibility of FPGA devices and how this can be exploited by genetic algorit
 by treating the bitstring used by the hardware for calibration as the genetic material
 to be evolved. They also describe the fitness function as the total number of correct
 output bits read off the hardware for all possible inputs. They succeed in evolving multiplexors and
-counters but highlight a limitation of the direct evolution of the calibration
+counters but highlight a limitation of the direct evolution of the FPGA calibration
 bitstring; only a subset of the bitstring include bits relevant to the function
 of a specific region of the hardware, some bits were redundant, act as checksums, or
 perform routine non-optional calibration. This increase in the amount of genetic
@@ -214,12 +210,32 @@ material expands the search space and extends the time required for the genetic 
 Using the proposed framework they evolve a image pattern recognition system,
 and a welding robot controller which takes sensor information and traces a ditch.
 
-\todo add graph of gate level evolution, phenotype -> genotype mapping
-
 They highlight the need to abstract from gate level evolution to improve the
 execution times of the genetic algorithm and present function level evolution
 as a solution. This involves replacing gates (AND, OR, NOT, etc.) with functions
-(adder, subtracter, etc.) as the atomic evolutionary components.
+(adder, subtracter, etc.) as the atomic evolutionary components. Figure~\ref{fig:mapping}
+outlines the principal, instead of evolving the configuration bitstring directly
+a mapping is defined which translates a binary string into a collection of
+logic gates. This logic structure can then be synthesised into an FPGA configuration
+bitstring and is uploaded to the device.
+
+\begin{figure}
+	\centering
+	\begin{subfigure}[ht]{0.4\textwidth}
+		\centering
+		\ldots 0010101010100010101011 \ldots
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{0.1\textwidth}
+		$\rightarrow$
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{0.4\textwidth}
+		\includegraphics[width=\textwidth]{evolved_adder}
+	\end{subfigure}
+	\caption{For gate-level evolution a mapping has to be devised from bitstring to logic structure.}
+	\label{fig:mapping}
+\end{figure}
 
 The capacity for evolutionary hardware to come up with bespoke and novel solutions
 was explored by Adrian Thompson \cite{10.1007/3-540-63173-9_61}. A genetic algorithm
@@ -230,8 +246,6 @@ and "low" (0v) for the other. This was a truly bespoke application of evolutiona
 hardware as the region exposed to the genetic algorithm had no access to any
 hardware capable of timing; the differentiation task was one which the hardware
 conventionally would not be able to do.
-
-\todo include 10x10 grid schematic
 
 The algorithm driving evolution was standard in many respects; with a population size of 50,
 the most fit individual was copied verbatim into the next generation (a mechanism
@@ -249,9 +263,10 @@ left-to-right row by row. The fitness evaluation was conducted on physical hardw
 were fed into the device and an single cell's output was read. The fitness of a configuration
 was defined as the difference between the average output for each of the two input frequencies
 (multiplied by a constant to avoid otherwise inescapable local optimum), therefore the larger
-the distinction the more fit the configuration was deemed.
-
-\todo explain the inexcapable local optimum
+the distinction the more fit the configuration was deemed. Without the constants in the
+fitness function the genetic algorithm directly connected the input and output of
+the circuit through the FPGA creating a useless configuration which performed
+well enough to discourage any further exploration.
 
 After 3500 generations of evolution the genetic algorithm produced a specification
 capable of distinguishing the two input signals cleanly. This is behaviour beyond
@@ -261,10 +276,12 @@ algorithms happily exploit undefined and strange behaviour on-chip, such as feed
 loops and more strangely; unconnected circuitry. The successful
 individual's schematic was pruned of any circuitry which should not influence the
 output (a direct path could not be traced from the input to the output via that route),
-and the fitness of what remained {\em dropped}. The search procedure took 2-3 weeks
+and the fitness of what remained {\em dropped}. This reduction in quality was attributed
+to strange undefined chip behaviour, unwhittingly exploited by the genetic algorithm.
+FPGA cells exerted subtle influence over neighbouring cells despite the absence of any explicit
+connection.
+The search procedure took 2-3 weeks
 due to each evaluation taking up to 5 seconds.
-
-\todo explain the drop in fitness as the scheme was pruned
 
 By extending the fitness function we can apply evolutionary pressure to configurations
 to nurture more than just correctness.
@@ -275,15 +292,6 @@ the number of cells innactive. This paper also introduced a mechanism for evolvi
 and shape of the underlying fabric in parallel to conventional evolvable hardware
 evolution, this allows for a system to define
 how large it should be.
-
-\todo this next paragraph is hard to understand, maybe get rid?
-
-Evolving the size and shape of the circuitry involves defining how mutation and recombination
-of circuit size operates. The mutation step alters the number of rows and columns of a circuit
-with equal probability, and new cells are initialised randomly. Recombination is a
-mechanism for crossover of non-uniform circuit sizes which involves exchanging cells
-and way to preserve positional connections of cells in the case that the new circuit
-is too restrictive for direct copying.
 Both multi-objective fitness functions and evolved circuit structure
 apply evolutionary pressure to improving the quality of evolutionary hardware
 beyond simple performance accuracy.
@@ -446,31 +454,38 @@ hardware also looks extensively into faults which occur some way into the
 operational lifespan of a product; this can be component failures do to environmental
 conditions or an aging device.
 
-\todo explain the resilience better
-
 Genetic algorithms by their nature produce designs which are resilient in the face
-of change \cite{10.1007/3-540-46406-9_14}. More fragile designs are often
+of change \cite{10.1007/3-540-46406-9_14}\cite{651463}. If a solution is perticularly fragile a
+simple single mutation could cripple its performance, the probability that an individual
+has successful offspring is therefore directly tied to the probability an individuals is
+able to perform well
+despite being subjected to random mutations. More fragile designs are often
 mutated into obscurity whereas ones with
-natural fault tolerance endure. Amplifying the effects of this subtle pressure towards fault
+natural fault tolerance endure. Over time this tendancy to maintain a population
+of individuals capable of surviving minor changes leads to a naturally fault tolerant
+solution.
+Amplifying the effects of this subtle pressure towards fault
 tolerant design is a mainstay of applied evolutionary hardware research.
 
 In \cite{10.1007/3-540-61093-6_6} a robot welding controller designed to trace
 ditches comes equiped with an evolvable hardware backup system which is activated
 should a hardware fault be detected. Controllers such as these conventionally use
-FPGAs anyway; the economy of bespoke high-performance industrial requirements
+FPGAs anyway \cite{4267891}; the economy of bespoke high-performance industrial requirements
 often make FPGAs the best choice (as detailed in Subsection~\ref{ss:FPGAs}). Because of
 this there is a prime opportunity to deploy evolvable hardware to recover from
 a fault which would otherwise require a compelete hardware overhaul. \cite{10.1007/3-540-61093-6_6}
 succesfully demonstrate such capacity.
 
-\todo Evolutionary techniques for fault Tolerance\cite{651463}
-Fault tolerant fitness function, fault tolerance by natural process, control for a robot evolved
-
-\todo On the Automatic Design of Robust Electronics Through Artificial Evolution
-Addresses problems of EHW only working at certain temperatures. Selection pressure
-for robustness added by executing fitness evaluation and different temperatures
-
-\todo Evolution of fault-tolerant and noise robust digital designs
+Along with Adrian Thompson's genetic algorithm exploting undefined chip behaviour
+\cite{10.1007/3-540-63173-9_61}, in another paper Thompson also notes that evolveable
+hardware has designed
+systems which rely on undefined temperature sensitive component behaviours
+\cite{Thompson:1998:ADR:645508.656773}. In order to breed solutions capable
+of functioning on different chips and in a broad array of conditions an extended
+fitness function
+was developed to apply selection pressure to temperature robustness qualities.
+This fitness function repeated the evaluation step on a series of different FPGAs
+at different temperatures and then combined the results.
 
 One of the potential problems with fitness function driven exploration comes in
 the form of environment specific effects. Somefolk et al. explored the problem
@@ -479,7 +494,7 @@ sensitive behaviours of a chip \cite{10.1007/BFb0057603}.
 
 By defining a list of the faults a device is expected to encounter during it's
 lifespan one can design a fitness function which tests a given circuit under
-normal conditions and faulty conditions \cite{Keymeulen2000}. This technique applies explicit
+normal conditions and faulty conditions \cite{651463}\cite{Keymeulen2000}. This technique applies explicit
 evolutionary pressure to find designs which can tolerate a specific set of
 known and understood faults. Alongside the proposed fitness driven fault mitigation
 approach \cite{Keymeulen2000} introduces an alternative mechanism which takes the
@@ -490,7 +505,7 @@ could not recover from the injected fault, in these cases the genetic algorithm
 was to restart and continue searching through the design space under the conditions
 of the fault.
 
-Using conventional genetic algorithm, along with tournament selection, and elitism
+Using a conventional genetic algorithm, along with tournament selection, and elitism
 J. Lohn et al. demonstrate the capacity
 of evolvable hardware to reduce the impact of "stuck at zero" faults \cite{10.1007/3-540-36553-2_5}. They
 conducted their experiments on a simulated FPGA, attempting to evolve a quadrature
@@ -498,20 +513,13 @@ decoder, a device which indicates
 the direction of rotation of a wheel. The system was evolved in the presence
 of the fault and was capable of operating perfectly despite it.
 
-\todo Evolviving Redundant Structures for Reliable Circuits\cite{4291954}
-Novel redundancy structures, challenge to tune evolution to find these novel structures
-
-\todo Evolving Variability-Tolerant CMOS Designs\cite{10.1007/978-3-540-85857-7_27}
-High failure rate in CMOS designs, GA vs CGP, unconventional designs with variability-tolerance
-
-\todo Implementation of a Power-aware Dynamic Fault Tolerant Mechanism on the Ubichip Platform\cite{10.1007/978-3-642-15323-5_26}
-Built in self repair (BISR), dynamic fault tolerant system on the Ubichip platform
-
-\todo Machine Learing-based Anomaly Detection for Post-silicon Bug Diagnosis\cite{6513558}
-Post-fab bug detection with ML
-
-\todo Self-healing router architecture for reliable network-on-chips\cite{8292030}
-Redundancy based, rerouting
+Despite major advances in chip fabrication technology, due to transistors
+approaching the attomic scale, post-fab faults are a major issue. Walker et al.
+demonstrate the capacity for genetic algorithms to design hardware which would
+improve fabrication yeilds \cite{10.1007/978-3-540-85857-7_27}. The structures
+they successfully evolve prove highly tolerant to variations in fabrication process
+and they demonstrate the possibility to improve the success rate of chip manufacture
+through deployment of evolutionary hardware design.
 
 The space industry naturally wants to emphasise longevity in their design goals,
 this was a clear desire with the NASA's CT5 mission, and as previously mentioned
@@ -521,30 +529,22 @@ end of the missions lifespan \cite{Antenna}.
 Circuitry hosted in space is subject to a breadth of extreme conditions; temperature
 drifts, radiation, and poor serviceability to name a few. Radiation is a particular
 issue, bombarding electronics with electrons and protons causes huge damage.
-
-Space technology has traditionally used radiation-hard materials to achieve
+The space industry has traditionally used radiation-hard materials to achieve
 radiation resistance. These materials resist the ionising effects of radiation
 and reduce the probability of radiation-induced silicon faults. These materials
 are expensive and definitely not the only way to create long-life deep space
-electronics. A. Sotica et al. propose using genetic algorithms to drive
+electronics. Sotica et al. propose using genetic algorithms to drive
 in-situ hardware reconfiguration to bypass faulty areas \cite{1331112}. Experiments
 were performed on an FTPA with evolution controlled by an external stand-alone
 board-level evolvable system (SABLES) capable of performing an evaluation in 2ms.
-
 In experiments bombarding the chip with upto 350krad the system was usually able
 to recover functionality, and there were significant performance improvements over
 the unevolved comparison chip.
 
-\todo Evolutionary recovery of electronic circuits from radiation induced faults
-
-\todo Design of self-repairing control circuit for brushless DC motor based on evolvable hardware\cite{8046381}
-Radiation space damage, dynamic partial reconfiguration
-
-\todo Towards evolving fault tolerant biologically inspired hardware using evolutionary algorithms
-
-\todo Intelligent Fault Tolerance techniques
-
-\todo Requirement for extensive fault models to accurately inject faults
+In \cite{8046381} a brushless DC motor control circuit with built in hardware capable of executing
+a genetic algorithm was shown to be capable of self-repairing damage to upto 27.8\%
+of the hardware resource. Their system requires the complete shut down of the motor while
+evolution finds an alternative control circuit configuration.
 
 Fault tolerance in conventional hardware design requires redundancy in some
 form. Predictive preemptive instruction rescheduling on a different processor
@@ -559,5 +559,7 @@ tolerance which exploits flexibility. Many of the aforementioned modern
 fault techniques do little to improve the performance of faulty architectural
 processor components and rely on the ability to route around them.
 
-\todo Addressing the Metric Challenge: Evolved versus Traditional Fault Tolerant Circuits\cite{4291951}
-Compairson peice
+The bulk of evolvable hardware research addresses ``toy problems", and is a long
+way from being able to compete against conventional fault tolerant design
+techniques \cite{4291951}. But there have been promising results and unprecidented
+ability to design circuit structures with uncanny fault suvivability properties.

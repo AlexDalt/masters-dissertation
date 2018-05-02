@@ -135,7 +135,7 @@ the most part stagnated in recent years. I hope to explore how modern
 genetic algorithm techniques can craft an algorithm capable of designing solutions
 to conventional hardware problems, such as simple binary arithmatic.
 
-\subsection{Field Programmable Gate Arrays (FPGAs) \label{ss:FPGAs}}
+\subsection{Field Programmable Gate Arrays \label{ss:FPGAs}}
 Field Programable Gate Arrays (\todo ref) are the backbone of the vast majority of evolutionary
 hardware setups. They are a type of integrated circuit which can be
 configured after manufacture to perform a wealth of operations. Conventionally
@@ -194,7 +194,7 @@ more often than not, ASIC
 development is too expensive and not worth the narrow application setting. This demand has resulted in
 the widespread use of FPGAs
 in roles requiring an ASIC but without the market pressure to drive the development
-of one.
+of one \cite{4267891}.
 An application specific design can be built on an FPGA, and approach peak performance and power
 efficiency without massive development and production costs.
 The military and aerospace sectors use FPGAs extensively for these reasons along with
@@ -303,7 +303,7 @@ create a design both robust to faults and dependent on faults, as could happen i
 only evaluated in a faulty system \cite{651463}. Another fault resilience
 technique requires evaluating the configuration
 against a fault-free FPGA and then combining the result with evaluation runs on FPGAs
-simulating known frequent faults \cite{Keymeulen2000}. These faults could include component
+simulating known frequent faults \cite{651463}\cite{Keymeulen2000}. These faults could include component
 wearout, and manifest as blocked communicatoins between CLBs or render the function
 performed by a CLB innert. This extension of the fitness function (rather than
 mid-execution fitness function modification) removes this approach from the domain of dynamic problems,
