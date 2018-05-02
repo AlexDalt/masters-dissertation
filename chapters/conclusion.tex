@@ -32,7 +32,9 @@ binary arithmatic problem was successful, as outlined in Chapter~\ref{chap:evalu
 The inital genetic algorithm parameters in Section~\ref{s:ga_tune} mirror
 Thompson's exactly. When applied to 2-bit binary addition the algorithm
 executed quickly but in 30 repeated executions to generation 15000, failed to produce a perfect
-binary ADDer. The average final accuracy was 40, out of a maximum of 48.
+binary ADDer. The average final accuracy was 40 over 30 runs, out of a maximum of 48.
+
+\todo ref the range of solutions in the histogram which will be created
 
 This baseline algorithm was then improved on by factoring in features from
 modern genetic algorithm and evolvable hardware literiture.
@@ -47,6 +49,10 @@ generation 15000 produced a perfect solution will 100\% accuracy. This
 executed in comparable time to the initial parameters specified in
 \cite{10.1007/3-540-63173-9_61}, and achieved an average final fitness of 44,
 a clear improvement.
+
+\todo test to show that this is statistically significant
+
+\todo The failure cases were varied but one common one was 
 
 \todo directly compare to the paper where tournament selection was used to evolve an adder
 

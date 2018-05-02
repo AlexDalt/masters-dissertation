@@ -61,9 +61,11 @@ coppied from the function output, or any of the $x$\texttt{\_in} variables).
 
 \todo include diagram for this step too
 
+\todo explain the undefined chip behaviour bit more
+
 Deploying this simulation gave subsecond evaluation times for an entire generation of
-4x4 FPGAs. These performance benefits, whilst alienating us from the exploitation
-of strange undefined behaviour as experienced by Adrian Thompson\cite{10.1007/3-540-63173-9_61}
+4x4 FPGAs. These performance benefits, whilst removing the capacity to exploit
+strange undefined chip behaviour as experienced by Adrian Thompson\cite{10.1007/3-540-63173-9_61}
 it did allow considerably quicker software development and the creation of
 evolutionary hardware within the strict confines of defined behaviour which
 improved the ability to understand the machinations of their success.
@@ -97,10 +99,10 @@ and some auxiliary information depending on the type of fault being simulated.
 Whenever an FPGA configuration is created the fault information is coppied into it.
 The function then begins on an unending \texttt{while(true)} loop which conducts
 the evolutionary process until halted by the user. If coevolving the parasite
-population is shuffled and then the each member of the host population is sent
+population is shuffled and then each member of the host population is sent
 with it's random parasite counterpart to the \texttt{evaluate} step. This function
-also requires a pointer to the entire host population. If coevolution is not
-happening the function takes a pointer to a dummy parasite instead. When this
+also requires a pointer to the entire host population
+When this
 function returns the array \texttt{Individual.eval} has been filled. \texttt{eval[0]}
 contains the measure of the individuals correctness (already modified by the
 weightings given to addition and subtraction), \texttt{eval[1]} denotes the number
@@ -271,7 +273,7 @@ it is highlighted in red.
 
 \subsection{Test suite}
 The aparatus to perform tests takes the form of a while loop encapsulating the
-evolutionary process, reading performance data and meddling with parameters when
+evolutionary process, reading performance data and sculpting parameters as and when
 required (reseeding the population or changing weightings, for example). The
 bounds of the tests being executed are defined in the headerfile \texttt{evolve.h}
 (Appendix~\ref{appx:evolve}). \texttt{TEST\_SIZE} defines the number of samples

@@ -71,10 +71,14 @@ The least significant byte defines all the outputs, 2 bits per neighbour
 (from least significant bits to most significant bits: north, east, south,
 and west), where a 0 is defined as a direct mapping from the northern input
 to that output, a 1 means the eastern input is used, 2 the southern, and 3
-western. An output cannot be mapped to it's input, in the situation that the
-number associated with an output refers to the input coming from the same
-direction the function $F$ is used as input instead. A description of
+western.  A description of
 the complete string can be found in Figure~\ref{fig:bin}.
+An output cannot be mapped to it's input, in the situation that the
+number associated with an output refers to the input coming from the same
+direction the function $F$ is used as input instead, \todo this is what
+occurs in S out blah blah blah.
+
+\todo explain what the bitstring in fig:bin actually represents
 
 The most significant byte describes the function $F$. The low 2 bits describe
 the first input (00 $\rightarrow$ north, 01 $\rightarrow$ south, 10
@@ -101,16 +105,16 @@ node distance=0pt,
                 thick},
     B/.default=mirror, % by default braces are mirrored
                         ]
-\foreach \i in {0,1,1,0,0,0,1,0,0,
+\foreach \i in {1,1,0,0,0,1,0,0,
                 0,1,0,1,0,0,0}% <-- content of nodes
     \node[X] {\i};
-\draw[B] ( A-2.south west) -- node[below=2mm] {F} ( A-4.south east);
-\draw[B=] ( A-5.north west) -- node[above=2mm] {F in 1} ( A-6.north east);
-\draw[B] ( A-7.south west) -- node[below=2mm] {F in 2} ( A-8.south east);
-\draw[B=] ( A-9.north west) -- node[above=2mm] {W out} ( A-10.north east);
-\draw[B] ( A-11.south west) -- node[below=2mm] {S out} ( A-12.south east);
-\draw[B=] ( A-13.north west) -- node[above=2mm] {E out} ( A-14.north east);
-\draw[B] ( A-15.south west) -- node[below=2mm] {N out} ( A-16.south east);
+\draw[B] ( A-1.south west) -- node[below=2mm] {F} ( A-3.south east);
+\draw[B=] ( A-4.north west) -- node[above=2mm] {F in 1} ( A-5.north east);
+\draw[B] ( A-6.south west) -- node[below=2mm] {F in 2} ( A-7.south east);
+\draw[B=] ( A-8.north west) -- node[above=2mm] {W out} ( A-9.north east);
+\draw[B] ( A-10.south west) -- node[below=2mm] {S out} ( A-11.south east);
+\draw[B=] ( A-12.north west) -- node[above=2mm] {E out} ( A-13.north east);
+\draw[B] ( A-14.south west) -- node[below=2mm] {N out} ( A-15.south east);
     \end{tikzpicture}
 	\end{subfigure}
 	~
@@ -157,7 +161,7 @@ bytes long.
 This mapping was chosen because it is loosely in line with the number of bits
 required by \cite{10.1007/3-540-63173-9_61}. It allows concise expression of
 the FPGA. The order in which cells are defined also follows
-\cite{10.1007/3-540-63173-9_61}, and means any crossover occurring keeps
+\cite{10.1007/3-540-63173-9_61}, and means any crossover occurring tends to keep
 the horizontal sections consistent with each other.
 
 \todo include mapping order diagram and potential crossover diagram
@@ -177,6 +181,8 @@ introducing subtraction as a related but distinct problem. To this end evaluatio
 will consist of checking both addition and subtraction with weightings which can
 vary over time.
 
+\todo what weightings?
+
 \todo Talk about the complexity of the problem, the need to plan ahead, channels crossing over,
 individual simplicity but the need to chain together
 
@@ -191,18 +197,25 @@ streamlined software FPGA simulator as the evaluation backend for the
 genetic algorithm an enticing prospect.
 
 The simulation works as a self contained module which exposes a series of
-evaluation functions to the evolutionary system. When evaluating a binary
-addition or subtraction the FPGA is initialised to contain entirely undefined
-values (represented by a 2 internally), then the individual bits constituting the binary representation of the two numbers are fed
+evaluation functions to the evolutionary system.
+It includes intermediate variabled which are updated throughout
+execution, within these variables 0 and 1 represent the binary values
+0 and 1, and 2 represents an ``undefined" variable. This represents
+unknown variables.
+When evaluating a binary
+addition or subtraction the FPGA is initialised to contain entirely ``undefined"
+values, then the individual bits constituting the binary representation of the two numbers
+which are to be added are fed
 to each cell across the top of the FPGA in turn, and a control bit (designating addition/
 subtraction) is fed to the top left cell. The FPGA execution consists of
 two steps, a tick, and a tock; the tick involves pulling values from the surrounding
-cells and storing them internally, then the tock involves performing the computation
+cells and storing them internally, then the tock involves performing any computation
 and storing the neccessary values in the output buffer associated with each neighbor.
 The tick tock
 cycle continues until the southern output of the bottom cells is no longer undefined
-and stabilises on a constant output; unless this doesn't happen within 64 iteration
-in which case the simulation halts.
+and stabilises on a constant output; if this doesn't happen within 64 iterations
+the simulation halts. The system is deamed stable if the output doesnt change after
+a tick tock cycle.
 The output of the FPGA is read across the bottom row of cells.
 The halting compromise is necessary as some FPGA configurations
 have an oscillating output which never settles. This process is repeated for all possible
@@ -218,8 +231,9 @@ read off for a 2-bit arithmetic problem}
 \end{figure}
 
 Figure~\ref{fig:control} demonstrates the framework evaluating a 4x4 FPGA attempting
-binary arithmatic. Two 2-bit numbers, $x$ and $y$ are deconstructed into the constituent
-binary values where $x = x_0 + 2^{x_1}$ and $y = y_0 + 2^{y_1}$, these are made available
+binary arithmatic. Two 2-bit numbers, $x$ and $y$ are deconstructed into their constituent
+binary values $\{x\_0,x\_1\}$ and $\{x\_0,x\_1\}$ where $x = x\_0 + 2^{x\_1}$ and $y = y\_0 + 2^{y\_1}$,
+these are made available
 to the top row of FPGA cells from most significant to least significant bit, and a
 control bit (indicating addition or subtraction) is presented to the top left cell.
 After FPGA evaluation has concluded 3 bits are read from the bottom, the two bits
@@ -307,18 +321,18 @@ position within the ranking. By adding a "skew" by shifting the probability func
 to one closer resembling a quadratic one can emphasise the best performing
 individuals over the more balanced linear selection function.
 
+A single parameter change allows us to change the relative weightings of high scoring
+and low scoring individuals in a population via Equation~\ref{equ:skew}. Given
+population size $n$, individual $x$, the individuals position in the ranking $r$, and
+skew $s$ (between 0 and 1, where 1 is linear selection and 0 is quadratic) it
+generates a score between 1 and the population size plus 1. By varying the skew
+value I hope to gain insight into the impact of a more or less discriminatory
+selection mechanism.
+
 \begin{equation}
 	\label{equ:skew}
 	P(x) = \frac{2}{n(n+1)} (\frac{1-s}{n}r^2 + sr + 1)
 \end{equation}
-
-A single parameter change allows us to change the relative weightings of high scoring
-and low scoring individuals in a population via Equation~\ref{equ:skew}. Given
-population size n, individual x, the individuals position in the ranking r, and
-skew s (between 0 and 1, where 1 is linear selection and 0 is quadratic) it
-generates a score between 1 and the population size plus 1. By varying the skew
-value I hope to gain insight into the impact of a more or less discriminatory
-selection mechanism.
 
 Tournament selection involves randomly selecting $k$ individuals from the
 population, and the one with the highest fitness is chosen to fill a place
@@ -375,14 +389,18 @@ distance measurements.
 
 \begin{equation}
 	\label{equ:multi}
-	f(x) = w_{correct} f_{correct}(x) + w_{size} f_{size}(x) +
-	w_{div} f_{div}(x)
+	f(x) = w_{correct} \cdot f_{correct}(x) + w_{size} \cdot f_{size}(x) +
+	w_{div} \cdot f_{div}(x)
 \end{equation}
 
 Equation~\ref{equ:multi} summarises the multi-objective fitness function around
 which this evolvable hardware system is developed, where $w_x$ is the weighting
 associated with the fitness function $f_x$. $f_{correct}$ is the original fitness
-function of the process. The weightings are all
+function of the process, $f_{size}$ is a measure of how small and efficient a
+solution is, and $f_{div}$ provides the mean distance from an individual to
+every other individual in the population. If a population has a high $f_{div}$,
+the population is diverse.
+The weightings are all
 configurable and allows for fine grain sculpting of the evolutionary process.
 The size metric ensures power efficient solutions, and the diversity encourages
 a genetic variety. These need to be balanced with the weight given to solutions
@@ -400,6 +418,7 @@ random point in the 32 byte string is chosen and the two paired individuals will
 swap all values beyond the randomly chosen point. Once the entire population has
 undergone a similar procedure the population experiences mutation.
 
+\todo mention this is a non-standard approach but functionally identical
 
 \subsection{Coevolution}
 

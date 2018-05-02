@@ -27,8 +27,9 @@ Genetic algorithms grew from a branch of engineering which takes influence from
 nature. By applying Darwinian evolutionary theory to a population of binary strings
 they developed
 a robust directed non-deterministic procedure to navigate search spaces with non-continuous
-fitness. These search spaces are not well suited to conventional search methods
-and previously were only navigatable by random walks, or bruteforce search,
+fitness. These search spaces are not well suited to conventional search methods,
+such as innumerated bruteforce or heuristic driven methods like A* search,
+and previously were only navigatable by simple hill-climbers, random walks, or bruteforce search,
 and genetic algorithms provide a good general method to approach problems where
 such little information is known about a space of solutions.
 David Goldberg's book {\em Genetic Algorithms: In Search Optimisation \& Machine
@@ -57,6 +58,8 @@ stage a new population has been created, sampled from the old.
 	\label{eq:roulette}
 \end{equation}
 
+\todo fix crossover definiton
+
 \paragraph{Crossover}
 allows two strings in the new population to reproduce. Members of the breeding
 population are paired up at random, and there is a given probability that each
@@ -79,7 +82,8 @@ unfeesable.
 An interesting tagential application of FPGA technology to evolutionary algorithms comes as
 a physical evolution hardware accelerator \cite{1377261}, which uses the flexibility from the
 FPGA to allow incremental runtime hardware changes which allow the hardware realisation of
-functions which would otherwise be impossible to construct directly in hardware.
+functions which would otherwise be impossible to construct directly in hardware, to to the
+need for fluid function reconfigurability.
 This highlights the oportunity for aggressively efficient evolvable hardware
 systems.
 
@@ -89,14 +93,19 @@ Goldberg et al. offer a comparison of common selection schemes for use in geneti
 algorithm reproduction \cite{GOLDBERG199169}. They compared proportionate
 selection, rank based selection, and tournament selection, amongst others.
 
+\todo improve proportionate selection definition: alows an individual to be chosen
+as a parent with probability proportional to fitness score
+
 \paragraph{Proportionate selection} is the set of selection mechanisms which includes
 roulette wheel selection. All proportional selection schemes tie the probability of
 an individual being selected for the next generation to some function of their fitness
 function, $f$.
 
+\todo expand rank selection more be more verbose
+
 \paragraph{Rank selection} orders each member of a population by their
-fitness. Then associates the probability of each individual being selected as an
-individual in the next generation to their position in the ranking. This serves as
+fitness. Then associates the probability of each individual being selected as
+parent to their position in the ranking. This serves as
 a way to "flatten" out the selection curve, and reduces the influence of
 a huge spread of individual fitness.
 
@@ -108,7 +117,7 @@ larger.
 \paragraph{}
 There are key differences between these selection mechanisms which influences
 the descision to incorporate them into an evolvable hardware platform. Proportionate
-selection discriminates heavily by the fitness of inderviduals. Rank based
+selection discriminates heavily by the fitness of individuals. Rank based
 discriminates less and cares more about who is better (rather than by how
 much they are better). Tournament selection discriminates intensley within a given
 tournament but the selection process to assemble the tournament is uniformally
@@ -118,10 +127,13 @@ For evolvable hardware proportionate selection sees little use due to the range
 of fitness values often associated with members of the population, rank and
 tournament selection are used frequently.
 
+\todo tournament selection is a type of proportionate selection and performs similarly
+depending on the size
+
 \subsection{The Fitness Function}
 
 \begin{equation}
-	f(x) = \sum_{i=1}^{m} w_i f_i(x)
+	f(x) = \sum_{i=1}^{o} w_i f_i(x)
 	\label{equ:multi-obj}
 \end{equation}
 
@@ -130,8 +142,8 @@ measuring correctness (the original fitness functon)
 and any other measurements we can deploy evolutionary pressure to optimise for
 additional parameters \cite{deJong:2001:RBP:2955239.2955241}. For an individual
 $x$, a set of functions measuring distinct desirable aspects of individual
-$\{f_1,f_2,\ldots,f_m\}$, and a set of weightings associated with each function
-$\{w_1,w_2,\ldots,w_m\}$ the new fitness function $f(x)$, is given by
+$\{f_1,f_2,\ldots,f_o\}$, and a set of weightings associated with each function
+$\{w_1,w_2,\ldots,w_o\}$ the new fitness function $f(x)$, is given by
 Equation~\ref{equ:multi-obj}.
 
 This technique has been used to expand the success criteria for a evolvable hardware configuration
@@ -145,7 +157,7 @@ act as a way to divide labour (two populations solving different parts of a prob
 or as adversaries (one population of problem proposers and another of problem solvers).
 The former is used to improve the scalability of evolveable hardware to naturally
 decompose the problem into subproblems.
-The latter is often likened to a host/parasite or pray/predator relationship.
+The latter is often likened to a host/parasite or prey/predator relationship.
 The framework for a coevolutionary system is only a slight extension to the
 generic genetic algorithm outlined previously. In a competitive system, $P_s$ is a randomly
 seeded population of problem solvers, and $P_p$ is a randomly seeded population
@@ -164,6 +176,8 @@ find difficult. This proves a highly effective distinguishing tool, and produces
 problem proposers which create hard problems specifically tailored to the population
 of problem solvers.
 
+\todo ref this coevolution acting as distinguishers
+
 Extending the parallel with nature, one can modify the virulence of the parasitic
 coevolutionary population. Virulence is a measure of the hostility of the aggressor.
 Malaria is a highly virulent virus, often killing it's host; the evolutionary
@@ -180,7 +194,8 @@ differentiate themselves and push the population up the evolutionary ladder,
 the coevolved populations are said to have disengaged.
 By modifying the fitness function (\todo insert figure) Bullock et al. \cite{6790490}
 discouraged maximally
-virulent parasites. This encourages populations to stay engaged.
+virulent parasites. This encourages populations to stay engaged, and improved the
+quality of discovered solutions.
 
 \section{Evolvable Hardware}
 
@@ -193,7 +208,8 @@ to be evolved. They also describe the fitness function as the total number of co
 output bits read off the hardware for all possible inputs. They succeed in evolving multiplexors and
 counters but highlight a limitation of the direct evolution of the calibration
 bitstring; only a subset of the bitstring include bits relevant to the function
-of a specific region of the hardware. This increase in the amount of genetic
+of a specific region of the hardware, some bits were redundant, act as checksums, or
+perform routine non-optional calibration. This increase in the amount of genetic
 material expands the search space and extends the time required for the genetic algorithm to find a solution.
 Using the proposed framework they evolve a image pattern recognition system,
 and a welding robot controller which takes sensor information and traces a ditch.
@@ -231,8 +247,11 @@ The 100 cell area was encoded as a string of 1800 bits. Each cell was defined
 left-to-right row by row. The fitness evaluation was conducted on physical hardware
 (many EHW schemes use simulations to improve training time), a series of test frequencies
 were fed into the device and an single cell's output was read. The fitness of a configuration
-was defined as the difference between the average output for each different input frequency
-(multiplied by a constant to avoid otherwise inescapable local optimum).
+was defined as the difference between the average output for each of the two input frequencies
+(multiplied by a constant to avoid otherwise inescapable local optimum), therefore the larger
+the distinction the more fit the configuration was deemed.
+
+\todo explain the inexcapable local optimum
 
 After 3500 generations of evolution the genetic algorithm produced a specification
 capable of distinguishing the two input signals cleanly. This is behaviour beyond
@@ -245,6 +264,8 @@ output (a direct path could not be traced from the input to the output via that 
 and the fitness of what remained {\em dropped}. The search procedure took 2-3 weeks
 due to each evaluation taking up to 5 seconds.
 
+\todo explain the drop in fitness as the scheme was pruned
+
 By extending the fitness function we can apply evolutionary pressure to configurations
 to nurture more than just correctness.
 One of the first uses of multi-objective fitness function in evolvable hardware was
@@ -254,6 +275,8 @@ the number of cells innactive. This paper also introduced a mechanism for evolvi
 and shape of the underlying fabric in parallel to conventional evolvable hardware
 evolution, this allows for a system to define
 how large it should be.
+
+\todo this next paragraph is hard to understand, maybe get rid?
 
 Evolving the size and shape of the circuitry involves defining how mutation and recombination
 of circuit size operates. The mutation step alters the number of rows and columns of a circuit
@@ -422,6 +445,8 @@ post-fabrication faults which affect can effect chip yields, but evolutionary
 hardware also looks extensively into faults which occur some way into the
 operational lifespan of a product; this can be component failures do to environmental
 conditions or an aging device.
+
+\todo explain the resilience better
 
 Genetic algorithms by their nature produce designs which are resilient in the face
 of change \cite{10.1007/3-540-46406-9_14}. More fragile designs are often
