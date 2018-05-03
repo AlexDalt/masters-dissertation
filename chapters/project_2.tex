@@ -35,11 +35,30 @@ until the output is constant (or an iteration cap is reached in which case it ha
 At this point the function returns and the calling entity can inspect cell data and
 score accordingly.
 
+\begin{figure}
+	\centering
+	\begin{subfigure}[ht]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{tick.png}
+		\caption{}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{0.08\textwidth}
+	\end{subfigure}
+	~
+	\begin{subfigure}[ht]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{tock.png}
+		\caption{}
+	\end{subfigure}
+
+	\caption{Dataflow for one complete compute cycle for an FPGA cell configured by the bitstring in
+	Figure~\ref{fig:bin}; (a) tick (b) tock.}
+	\label{fig:ticktock}
+\end{figure}
+
 The \texttt{tick} step populates each FPGA cells \texttt{n\_in}, \texttt{e\_in},
 \texttt{s\_in}, and \texttt{w\_in}, with the relevent data from each neighboring cell.
 For example, when assigning \texttt{n\_in} the southern output (\texttt{s\_out})
-of the cell to the north is copied in \todo include diagram of this happening.
-This occurs for all cells save ones on the edge, if trying
+of the cell to the north is copied in. This occurs for all cells save ones on the edge, if trying
 to access a cell beyond the scope of the simulation the variable is assigned the value
 representing undefined, 2. This happens uniformly except in the case of the north most cells,
 in which cases their \texttt{n\_in} is the relevant value from the \texttt{FPGA.input}
@@ -59,9 +78,9 @@ is assigned in accordance with the cells internal mapping (eg. \texttt{n\_out}, 
 buffer the cell to the north coppies for it's \texttt{s\_in} value, could be directly
 coppied from the function output, or any of the $x$\texttt{\_in} variables).
 
-\todo include diagram for this step too
-
-\todo explain the undefined chip behaviour bit more
+The dataflow for a single CLB (configured
+by the bistring in Figure~\ref{fig:bin}) during a complete tick tock cycle is demonstrated
+in Figure~\ref{fig:ticktock}.
 
 Deploying this simulation gave subsecond evaluation times for an entire generation of
 4x4 FPGAs. These performance benefits, whilst removing the capacity to exploit
@@ -179,9 +198,16 @@ $\frac{1}{i}\texttt{MUTATION}$.
 be more or less discriminatory to highly performing individuals. The skewing
 parameter, given as $s$ in the equation is defined by \texttt{PROB\_SKEW} but
 this function simply returns it's argument passed through this quadratic equation as
-variable $r$.
+variable $r$. Figure~\ref{fig:skew_plot} demonstrates the selection pressure applied
+to each member of a ranking with a series of different skew values.
 
-\todo include graph of selection pressure for different skew values.
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{skew_graph.png}
+	\caption{The score given to each individual in a ranking with various
+	skew values.}
+	\label{fig:skew_plot}
+\end{figure}
 
 In order to store information about the evolutionary process \texttt{log\_data}
 writes information about each generation to a \texttt{log.dat} file, which later
@@ -205,7 +231,7 @@ All the evolutionary parameters can be defined at compile time to drastically
 alter the execution of the system, all the modifications can be done within
 the headerfile \texttt{evolve.h}.
 
-\todo complete function architecture diagram
+\todo complete function architecture diagram, maybe an algorithm type diagram
 
 \subsection{Fault Implimentation}
 Faults were implemented by doing a fault pass after each \texttt{tick tock} cycle in
@@ -254,7 +280,7 @@ for easy redrawing of the GUI. \texttt{init\_curses} sets up the environment,
 
 \begin{figure}
 \includegraphics[width=\textwidth]{GUI.png}
-\caption{GUI screenshot \todo rescreenshot}
+\caption{GUI screenshot}
 \label{fig:gui}
 \end{figure}
 

@@ -170,7 +170,7 @@ the horizontal sections consistent with each other.
 
 \subsection{Problem Choice}
 
-The choice of problem is a key component in designing and configuring the genetic
+The choice of problem is a key component in designing and configuring a genetic
 algorithm to tackle it.
 
 Within evolutionary hardware there are a number of benchmark problems, these usually
@@ -286,8 +286,8 @@ This ruggedness measure is equivalent to the correlation between an individuals
 fitness and the fitness of any offspring it produces\footnote{The genetic algorithm
 used to gather the data was calibrated with; a population
 size of 50, elitism, tournament selection of size 20, probability of crossover 0,
-a multiobjective-fitness function incoperating diversity weighted at 20\% accuracy,
-(see Section \todo ref), and the mutation rate varied between experiments. This parameter
+a multiobjective-fitness function incoperating diversity weighted at 20\% accuracy
+(see Section~\ref{ss:g_a}), and the mutation rate varied between experiments. This parameter
 configuration was arrived at after the experimentation in Chapter~\ref{chap:evaluation}.}.
 Figure~\ref{fig:rugged} outlines the relationship between the mutation rate and
 ruggedness. Even with a small number of mutations the correlation between parents
@@ -319,7 +319,7 @@ solution inert. However, the landscape hinted at in Figure~\ref{fig:rugged} is
 one which there are few effective mechanisms to navigate, the current ideal resting
 with a highly targeted genetic algorithm.
 
-\subsection{Genetic Algorithm}
+\subsection{Genetic Algorithm \label{ss:g_a}}
 
 The basis for the genetic algorithm follows similar work done by Adrian Thompson
 \cite{10.1007/3-540-63173-9_61}, but with a number of alternate avenues explored
@@ -342,10 +342,14 @@ can eradicate fragile solutions leading to a weak population never capable of
 climbing to the narrow peak of high fitness.
 
 \paragraph{Selection mechanism}
-\todo why do we ignore stochastic selecton
-The primary selection method will be rank-based selection, which is by far
+The initial selection method will be rank-based selection, which is by far
 the most popular selection method observed in preexisting work, however,
-tournament selection will also be explored.
+tournament selection will also be explored. We ignore proportionate selection
+methods as they discrimiate between individuals with great vigor initially,
+when the population is developing solutions improving from 15\% to 50\%
+accuracy, which it does with relitive ease which hurts population diversity.
+Later in execution the selection methods struggles to seperate individuals
+performing with an accuracy of 96\% and 100\%.
 
 Rank-based selection is performed primarily by ordering the members of a population
 based on their fitness and then associating the probability of selection to a
@@ -364,7 +368,12 @@ selection mechanism.
 
 \begin{equation}
 	\label{equ:skew}
-	P(x) = \frac{2}{n(n+1)} (\frac{1-s}{n}r^2 + sr + 1)
+	S(x) = \frac{1-s}{n}r^2 + sr + 1
+\end{equation}
+
+\begin{equation}
+	\label{equ:prob}
+	P(x) = \frac{S(x)}{\sum^{n}_{i=0} S(x_i)}
 \end{equation}
 
 Tournament selection involves randomly selecting $k$ individuals from the
@@ -392,8 +401,6 @@ solutions has been highlighted by Figure~\ref{fig:rugged} and highlights the
 need to employ some preservation mechanisms.
 
 \paragraph{Multi-objective Fitness Function}
-\todo Reference forwards, early testing demonstrated the need for a diversity
-measurement, see page ...
 
 Extending the generic fitness function to a linear combination of multiple different
 functions applies evolutionary pressure to a multitude of useful different factors.
@@ -404,10 +411,13 @@ by the device. To encourage smaller configurations a fitness functions can
 incorporate the number of cells inactive in a design into the evaluation
 procedure.
 
-Given the large volume of local optima and irregular peaks in the fitness
-landscape as demonstrated by Figure~\ref{fig:rugged}, it may be prudent to
-also incorporate some measure of diversity. \cite{deJong:2001:RBP:2955239.2955241}
-proposes a using a
+Early testing, see Section~\ref{s:ga_tune}, highlighted the need for a mechansim to
+cultivate population diversity. Too often did the system stumble into an evolutionary
+dead end and refuse to backtrack far enough to explore alternative routes.
+
+Given the extremely rugged landscape demonstrated by Figure~\ref{fig:rugged}, a
+fitness function encorperating some measure of diversity seems especially prudent.
+\cite{deJong:2001:RBP:2955239.2955241} proposes a using a
 distance measure from each individual to each other individual in the population
 to generate a score for the mean squared distance from a given member of the
 population to the rest of the population. This metric can be incorporated into
@@ -451,7 +461,14 @@ random point in the 32 byte string is chosen and the two paired individuals will
 swap all values beyond the randomly chosen point. Once the entire population has
 undergone a similar procedure the population experiences mutation.
 
-\todo mention this is a non-standard approach but functionally identical
+This approach to crossover is not standard, but it is functionally identical to
+the mechanism outlined in Chapter~\ref{chap:technical}. Normally when a slot is
+to be filled in a new population one or two parents are chosen, the latter arrangement
+chosen over the former with probability given by the crossover probability. In this system a complete
+mating pool is constructed, paired at random, and then exchange genetic material with
+probability given by the crossover probability. This shuffling performs a function similar
+enough to the textbook crossover definition but allowed for more cleanly developed
+code with clear seperate sections for selection and crossover.
 
 \subsection{Coevolution}
 
@@ -477,8 +494,6 @@ the parasite. The parasite gains a score of $m - f_{add}(x) - f_{sub}(x)$ where
 $m$ is the maximum score possible ($bl$, where $b$ is the number of output bits for
 each problem and $l$ is the length of the set of problems contained within a
 parasite).
-
-\todo include parasite diagram
 
 Then the parasite population undergoes selection and mutation in an identical
 fashion to the host population.
@@ -518,10 +533,10 @@ tolerant circuitry and also the use of evolutionary hardware as a fault
 recovery mechanism in itself the definition of what constitutes a fault in
 this context must be narrowed down. I primerily want to explore faults
 generated on a device as it is used, these faults are mainly caused by
-component wear out and unpredictable environmental effects, to
+component wear out and unpredictable environmental effects \cite{4291951}, to
 this end I will extend the FPGA simulation to model
 faults in the internal logic of an FPGA cell. These faults will manifest as clamping
-the output of any logic operation to 0, 1, or 2 (which is the value reserved to represent
+the output of any logic operation to 0, 1, or 2 (the value reserved to represent
 an undefined value). The evolutionary algorithm is unaware of the
 faults, the only perceptible difference is in the evaluation of a population,
 which executes as expected and continues to encourage the population to improve in this
@@ -535,20 +550,16 @@ induced. Observing the sharp recovery of the system indicates the potential of
 such a fault recovery mechanism.
 
 Along with observing how evolution can help a system recover from a fault, an
-analysis into how a system evolves in the presence of intermittent "sticky"
+analysis into how a system evolves in the presence of intermittent ``sticky"
 faults could give insight into the uncomfortable world of irregular fault behaviour.
 The evaluation backend of the evolvable hardware platform can activate and
 deactivate faults as required. Evolving in the presence of such an evaluation
 mechanism should gradually encourage a population which can perform well
 irrespective of an active fault or not.
 
-\todo add sticky fault state machine
-
 The reason the faults exist is of no consequence to the evolutionary process,
 but grounding this exploration in expected fault models will help to generate
-practical recovery methods.
-
-\todo cite
+practical recovery methods \cite{10.1007/3-540-36553-2_5}.
 
 \subsection{Dynamic Weightings}
 The second set of dynamic problems being explored involves shifting the relative

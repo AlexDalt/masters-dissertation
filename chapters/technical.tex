@@ -26,16 +26,15 @@ the relevant existing work.
 Genetic algorithms grew from a branch of engineering which takes influence from
 nature. By applying Darwinian evolutionary theory to a population of binary strings
 they developed
-a robust directed non-deterministic procedure to navigate search spaces with non-continuous
+a robust directed nondeterministic procedure to navigate search spaces with noncontinuous
 fitness. These search spaces are not well suited to conventional search methods,
 such as innumerated bruteforce or heuristic driven methods like A* search,
-and previously were only navigatable by simple hill-climbers, random walks, or bruteforce search,
+and previously were only navigable by simple hill-climbers, random walks, or bruteforce search,
 and genetic algorithms provide a good general method to approach problems where
 such little information is known about a space of solutions.
 David Goldberg's book {\em Genetic Algorithms: In Search Optimisation \& Machine
 Learning} \cite{Goldberg:1989:GAS:534133} contains a good summary of the knowledge
-of genetic algorithms as it stood in the early 1990s after the vast majority of what
-we know had been published.
+of genetic algorithms as it stood in the early 1990s.
 The genetic algorithm as presented by Goldberg consists
 of a repeated cycle of reproduction, crossover, and mutation; and operates on a
 population of randomly seeded binary strings.
@@ -66,7 +65,7 @@ has a chance to be filled by an individual in the previous generation selected
 by the given selection mechanism. If crossover is selected as the means to
 fill a position in the new population two parents are selected by the genetic
 algorithm selection mechanism,
-, a number, $k$,
+, a number $k$,
 is selected such that $1 \leq k \leq l$, where $l$ is the population string length.
 Both individuals, then swap every bit from position $k$ onwards.
 
@@ -79,14 +78,14 @@ is flipped with probability $\frac{m}{l}$.
 These relatively simple mechanisms provide the non-deterministic but focussed,
 and surprisingly robust search procedure capable of addressing a problem when
 little is known about the search space and systematically forming an answer is
-unfeesable.
+unfeasible.
 
-An interesting tagential application of FPGA technology to evolutionary algorithms comes as
+An interesting tangential application of FPGA technology to evolutionary algorithms comes as
 a physical evolution hardware accelerator \cite{1377261}, which uses the flexibility from the
 FPGA to allow incremental runtime hardware changes which allow the hardware realisation of
-functions which would otherwise be impossible to construct directly in hardware, to to the
+functions which would otherwise be impossible to construct directly in hardware, to the
 need for fluid function reconfigurability.
-This highlights the oportunity for aggressively efficient evolvable hardware
+This highlights the opportunity for aggressively efficient evolvable hardware
 systems.
 
 \subsection{Selection Mechanisms}
@@ -118,15 +117,15 @@ There are key differences between these selection mechanisms which influences
 the descision to incorporate them into an evolvable hardware platform. Proportionate
 selection discriminates heavily by the fitness of individuals. Rank based
 discriminates less and cares more about who is better (rather than by how
-much they are better). Tournament selection discriminates intensley within a given
+much they are better). Tournament selection discriminates intensely within a given
 tournament but the selection process to assemble the tournament is uniformally
-random, so depending on the tournament size this can be highly descriminatory
+random, so depending on the tournament size this can be highly discriminatory
 (large tournament size) or minimally descriminatory (small tournament size).
 At certain tournament sizes tournament selection performs similarly to roulette
 wheel selection.
 For evolvable hardware proportionate selection sees little use due to the range
 of fitness values often associated with members of the population, rank and
-tournament selection are used frequently.
+tournament selection is frequently used.
 
 \subsection{The Fitness Function}
 
@@ -136,7 +135,7 @@ tournament selection are used frequently.
 \end{equation}
 
 By extending the fitness function to a weighted linear combination of a function
-measuring correctness (the original fitness functon)
+measuring correctness (the original fitness function)
 and any other measurements we can deploy evolutionary pressure to optimise for
 additional parameters \cite{deJong:2001:RBP:2955239.2955241}. For an individual
 $x$, a set of functions measuring distinct desirable aspects of individual
@@ -149,11 +148,11 @@ to create smaller, or more fault resistant hardware designs.
 
 \subsection{Coevolution}
 
-Coevolution refers to the practice of evolving to populations in tandem, this can
+Coevolution refers to the practice of evolving two populations in tandem, this can
 act as a way to divide labour (two populations solving different parts of a problem)
  \cite{Potter:2000:CCA:1108888.1108890},
 or as adversaries (one population of problem proposers and another of problem solvers).
-The former is used to improve the scalability of evolveable hardware to naturally
+The former is used to improve the scalability of evolvable hardware to naturally
 decompose the problem into subproblems.
 The latter is often likened to a host/parasite or prey/predator relationship.
 The framework for a coevolutionary system is only a slight extension to the
@@ -178,11 +177,11 @@ Extending the parallel with nature, one can modify the virulence of the parasiti
 coevolutionary population. Virulence is a measure of the hostility of the aggressor.
 Malaria is a highly virulent virus, often killing it's host; the evolutionary
 process which drove it's development encourages causing maximum harm to the target.
-An example of virus with a low virulence is the common cold, it gains nothing from
+An example a of virus with a low virulence is the common cold, it gains nothing from
 killing the host, it wants the host to survive and spread the virus; this means
 there is evolutionary pressure discouraging a maximal virulence.
 
-In some settings the population of highly virulent problem proposers develop to be much more
+In some settings a population of highly virulent problem proposers develop to be much more
 aggressive than the solvers can handle, meaning no solver ever manages to
 successfully solve any problem, even if it could have solved some easy ones.
 When individuals can no longer
@@ -207,7 +206,7 @@ bitstring; only a subset of the bitstring include bits relevant to the function
 of a specific region of the hardware, some bits were redundant, act as checksums, or
 perform routine non-optional calibration. This increase in the amount of genetic
 material expands the search space and extends the time required for the genetic algorithm to find a solution.
-Using the proposed framework they evolve a image pattern recognition system,
+Using the proposed framework they evolve an image pattern recognition system,
 and a welding robot controller which takes sensor information and traces a ditch.
 
 They highlight the need to abstract from gate level evolution to improve the
@@ -260,7 +259,7 @@ experimentation.
 The 100 cell area was encoded as a string of 1800 bits. Each cell was defined
 left-to-right row by row. The fitness evaluation was conducted on physical hardware
 (many EHW schemes use simulations to improve training time), a series of test frequencies
-were fed into the device and an single cell's output was read. The fitness of a configuration
+were fed into the device and a single cell's output was read. The fitness of a configuration
 was defined as the difference between the average output for each of the two input frequencies
 (multiplied by a constant to avoid otherwise inescapable local optimum), therefore the larger
 the distinction the more fit the configuration was deemed. Without the constants in the
@@ -308,14 +307,14 @@ circuit function increases. The poor scaling of the genetic algorithm is due to 
 features; the larger circuit size required (and the consequently larger genetic material),
 and the larger number of test-cases in the evaluation function. One way to combat this
 involves decomposing the problem into subsystems \cite{10.1007/978-3-540-46239-2_5}.
-This reduced granularity reduces the search space of solutions and improves search
-performance at the cost of reduced flexibility to construct novel circuitry.
+This reduced granularity shrinks the search space of solutions and improves search
+performance at the cost of the flexibility to construct novel circuitry.
 
 A similar method proposed by J. Torrensen suggests allowing the evolutionary
 process itself to subdivide the process, increased complexity evolution \cite{Torresen2002}. The area
 of an FPGA is divided into subsets of cells and the function of each of these
 subsets is decided manually or by the evolutionary process.
-The first system, dubbed "partitioned training vectors" involves feeding the
+The first system, dubbed ``partitioned training vectors" involves feeding the
 complete input information individually to each subset, but only reading off
 a subset of the output bits from each region of cells. In this way each subset
 can distinguish a few answers perfectly and the other input combinations are
@@ -345,7 +344,7 @@ of 2 2-bit numbers, whereas for a 3-bit adder this value grows to 64 ($2^{2 \cdo
 For practical evolution of larger circuits this requires some careful thought.
 
 A novel approach to shrinking the search spaces involves using compression
-techniques to reduce the size of the genetic material. \cite{1508485} use
+techniques to reduce the size of the genetic material. \cite{1508485} uses
 Lempel-Ziv compression to limit the genome complexity and suggest directing
 research into evolvable hardware scaling to considering only ``active" areas
 of the genetic material and limit the search space to only include meaningful
@@ -392,7 +391,7 @@ from logic circuit synthesis \cite{Vasicek2011} to high bandwidth image filter
 evolution \cite{10.1007/3-540-46004-7_26}\cite{HybridFilter}.
 Using tournament selection and elitism T. Higuchi et al.
 developed a custom evolvable hardware chip for use in telecomunications and robots \cite{HiguchiRW},
-claiming successful evolution of robot controlers and ciruits performing lossless image
+claiming successful evolution of robot controllers and ciruits performing lossless image
 compression outperforming existing standards. All this was performed on off
 the shelf components designed to accelerate the evolvable hardware process
 for gate-level evolution \cite{HiguchiRW}. A similar success story with hardware
@@ -402,14 +401,14 @@ a training time of only 10 minutes to adapt to a new user \cite{Kajitani1999AnEH
 In the name of robustness, adaptability and complexity, POEtic tissue
 \cite{Tyrrell:2003:PTI:1766731.1766747} is
 an effort to build an extended evolvable hardware platform inspired by
-earilier work on phylogenesis (alaysis of the evolution individuals and species),
+earilier work on phylogenesis (analysis of the evolution individuals and species),
 ontogenesis (development of single-molecular organisms), and epigenesis
 (the learning over an idividuals lifespan) \cite{10.1007/3-540-63173-9_37}.
 These three traits inspire the genotype, mapping, and phenotype layer of the
 hardware system proposed. This system would act as an evolutionary hardware
 specific replacement for current FPGA systems.
 
-Adding to the literiture regarding the evolutionary scaling issue specifically
+Adding to the literature regarding the evolutionary scaling issue specifically
 in the domain of evolvable hardware
 Modular Evolvable Hardware (MEH) \cite{1299561} performs functional decomposition
 of the overall hardware requirements and then individual module evolution.
