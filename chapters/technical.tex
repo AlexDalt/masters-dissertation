@@ -116,8 +116,8 @@ larger.
 There are key differences between these selection mechanisms which influences
 the descision to incorporate them into an evolvable hardware platform. Proportionate
 selection discriminates heavily by the fitness of individuals. Rank based
-discriminates less and cares more about who is better (rather than by how
-much they are better). Tournament selection discriminates intensely within a given
+discriminates less and cares more about who performs better (rather than by how
+much they perform better). Tournament selection discriminates intensely within a given
 tournament but the selection process to assemble the tournament is uniformally
 random, so depending on the tournament size this can be highly discriminatory
 (large tournament size) or minimally descriminatory (small tournament size).
@@ -415,32 +415,32 @@ of the overall hardware requirements and then individual module evolution.
 
 \subsection{Arithmetic Circuits}
 
-Binary arithmatic has seen some use as a benchmarking problem for evolvable systems.
+Binary arithmetic has seen some use as a benchmarking problem for evolvable systems.
 The most common applications of genetic algorithms within the hardware space
 are as learning robot/prosthetics controllers or fast image filters, however
 in \cite{Miller_multiple-valuedcombinational} Kalganova et al. demonstrate the
 capacity for evolvable hardware to generate 1-bit addition circuits. These
-circuits are capable of adding upto 3 different variables and provide a carry-out
+circuits are capable of adding up to 3 different variables and provide a carry-out
 bit of a full-adder.
 
 Successful evolution of robust 2-bit addition was achived by Miller et al. through
 the deployment of tournament selection \cite{TournamentAdder}. This was evolved
 in the presence of an imperfect fitness function and used the adjustable selection
-pressure of tournament selection to develop a fine-tuned genetic algorithm tailor
+pressure of tournament selection to develop a fine tuned genetic algorithm tailor
 made for various noise levels.
 
 \section{Dynamic Problems}
 
 Dynamic problems are challenges which change over time. These can take many
 forms, from scheduling \cite{LIN1997AGA}, to fault mitigation, and optimisation problems
-\cite{Branke2003}. The vast majority of evolutionary computing research focusses on
+\cite{Branke2003}. The vast majority of evolutionary computing research focuses on
 static problems, but the dynamic varient are more indicative of real problems.
 In \cite{LIN1997AGA} Lin et al. develop a genetic algorithm
 which schedules continously arriving jobs. A series of dynamic qualities, including
-timing information job importance fed into a multi-objective fitness function. This
+timing information and job importance fed into a multi-objective fitness function. This
 approach improved over current deterministic job scheduling schemes. \cite{Branke2003}
-details the use of distinct sub-populations in a multi-population structure to
-improve diversity and better tackle the bredth of a dynamic problem.
+details the use of distinct subpopulations in a multi-population structure to
+improve diversity and better tackle the breadth of a dynamic problem.
 
 \subsection{Fault Tolerance}
 
@@ -450,7 +450,7 @@ In hardware design, fault tolerance is defined as a systems capacity to
 remain functional despite component failure. This is usually in reference to
 post-fabrication faults which affect can effect chip yields, but evolutionary
 hardware also looks extensively into faults which occur some way into the
-operational lifespan of a product; this can be component failures do to environmental
+operational lifespan of a product; this can be component failures due to environmental
 conditions or an aging device.
 
 Genetic algorithms by their nature produce designs which are resilient in the face
@@ -467,7 +467,7 @@ Amplifying the effects of this subtle pressure towards fault
 tolerant design is a mainstay of applied evolutionary hardware research.
 
 In \cite{10.1007/3-540-61093-6_6} a robot welding controller designed to trace
-ditches comes equiped with an evolvable hardware backup system which is activated
+ditches comes equipped with an evolvable hardware backup system which is activated
 should a hardware fault be detected. Controllers such as these conventionally use
 FPGAs anyway \cite{4267891}; the economy of bespoke high-performance industrial requirements
 often make FPGAs the best choice (as detailed in Subsection~\ref{ss:FPGAs}). Because of
@@ -476,7 +476,7 @@ a fault which would otherwise require a compelete hardware overhaul. \cite{10.10
 succesfully demonstrate such capacity.
 
 Along with Adrian Thompson's genetic algorithm exploting undefined chip behaviour
-\cite{10.1007/3-540-63173-9_61}, in another paper Thompson also notes that evolveable
+\cite{10.1007/3-540-63173-9_61}, in another paper Thompson also notes that evolvable
 hardware has designed
 systems which rely on undefined temperature sensitive component behaviours
 \cite{Thompson:1998:ADR:645508.656773}. In order to breed solutions capable
@@ -487,8 +487,8 @@ This fitness function repeated the evaluation step on a series of different FPGA
 at different temperatures and then combined the results.
 
 One of the potential problems with fitness function driven exploration comes in
-the form of environment specific effects. Somefolk et al. explored the problem
-where the evolutionary process honed in to a solution which exploited temperature
+the form of environment specific effects. Adrian Thompson explored the problem
+where the evolutionary process honed into a solution which exploited temperature
 sensitive behaviours of a chip \cite{10.1007/BFb0057603}.
 
 By defining a list of the faults a device is expected to encounter during it's
@@ -510,13 +510,14 @@ of evolvable hardware to reduce the impact of "stuck at zero" faults \cite{10.10
 conducted their experiments on a simulated FPGA, attempting to evolve a quadrature
 decoder, a device which indicates
 the direction of rotation of a wheel. The system was evolved in the presence
-of the fault and was capable of operating perfectly despite it.
+of the fault and was capable of operating perfectly despite this.
 
-Despite major advances in chip fabrication technology, due to transistors
-approaching the attomic scale, post-fab faults are a major issue. Walker et al.
+In the face of major advances in chip fabrication technology, due to the fact transistors
+are
+approaching the atomic scale, post-fabrication chip faults are a major issue. Walker et al.
 demonstrate the capacity for genetic algorithms to design hardware which would
 improve fabrication yeilds \cite{10.1007/978-3-540-85857-7_27}. The structures
-they successfully evolve prove highly tolerant to variations in fabrication process
+they successfully evolve prove highly tolerant to variations in the fabrication process
 and they demonstrate the possibility to improve the success rate of chip manufacture
 through deployment of evolutionary hardware design.
 
@@ -561,4 +562,4 @@ processor components and rely on the ability to route around them.
 The bulk of evolvable hardware research addresses ``toy problems", and is a long
 way from being able to compete against conventional fault tolerant design
 techniques \cite{4291951}. But there have been promising results and unprecidented
-ability to design circuit structures with uncanny fault suvivability properties.
+ability to design circuit structures with fault suvivability properties.

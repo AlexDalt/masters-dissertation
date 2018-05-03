@@ -69,7 +69,7 @@ the implimentation details. Chapter~\ref{chap:evaluation} focusses on evaluating
 the project and includes all tests conducted throughout the project. Finally,
 Chapter~\ref{chap:conclusion} contains the conclusion to this disseration.
 
-\section{Evolvable Hardware}
+\section{Evolvable Hardware \label{s:ehw}}
 Decades of evolvable hardware research has explored the application of genetic algorithms to
 the domain of hardware design. Genetic algorithms come from the field of natural
 computing and use Darwinian-inspired probabilistic procedure to improve a population
@@ -233,16 +233,18 @@ variations, some of which will be explored in this thesis. The basic genetic alg
 outlined in Algorithm~\ref{alg:basic}.
 
 \begin{algorithm}
-	Randomly initialise a population $P$
+	Randomly initialise a population $P$\\
 	\While{evolving}{
-		$Evaluate(P)$
-		\ForAll{$i \in$ new population $P'$}{
+		$Evaluate(P)$\\
+		\While{New population $P'$ not full}{
 			\eIf{Crossover occurs}{
 				$p_1 \leftarrow Select(P)$\\
 				$p_2 \leftarrow Select(P)$\\
-				$i_1,i_2 \leftarrow Crossover(p_1,p_2)$
+				$i_1,i_2 \leftarrow Crossover(p_1,p_2)$\\
+				Add $i_1$ and $i_2$ to $P'$
 			}{
-				$i \leftarrow Select(P)$
+				$i \leftarrow Select(P)$\\
+				Add $i$ to $P'$
 			}
 		}
 		$P \leftarrow Mutate(P')$

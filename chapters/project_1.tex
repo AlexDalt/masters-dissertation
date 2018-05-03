@@ -43,7 +43,7 @@ to simplify development and improve the speed of evolutionary training.
 A single problem has to be chosen to which we will tailor the genetic process.
 
 \section{Project Management}
-The sourcecode is hosted online at \url{https://github.com/AlexDalt/MalleableHardwareAdder},
+The source code is hosted online at \url{https://github.com/AlexDalt/MalleableHardwareAdder},
 it's written in C to maximise training performance and Git was used for version control.
 Regular supervisor meetings ensured the project stayed focussed. The aims
 of the project are reduced to evaluating various performance metrics of
@@ -53,7 +53,7 @@ different and new evolvable hardware processes.
 The high level design choices have been made to improve development time
 and discern insights into evolutionary hardware with dynamic problems and
 the scaling issues involved. The system should be flexible so parameters can
-be altered between searches and infomation
+be altered between searches and information
 about the population performance should be offered as the genetic algorithm runs.
 
 \subsection{Phenotype to Genotype Mapping}
@@ -75,12 +75,12 @@ western.  A description of
 the complete string can be found in Figure~\ref{fig:bin}. In this example
 the cell performs an XOR operation on the inputs coming from the cells to
 the north and south. The southern input is mapped to the eastern output,
-and the norther input is mapped to the western output. Both the northern
+and the northern input is mapped to the western output. Both the northern
 and southern outputs send the output of the XOR operation as under my
 scheme
 an output cannot be mapped to it's input, in the situation that the
 number associated with an output refers to the input coming from the same
-direction the function $F$ is used as input instead. As the northen output
+direction the function $F$ is used as input instead. As the northern output
 is specified as 00 (NORTH) and the southern input is specified as 10 (SOUTH)
 they both recieve the output of the function.
 
@@ -159,12 +159,12 @@ node distance=0pt,
 \end{figure}
 
 Cells are defined from left to right, top to bottom on the FPGA. Therefore the
-binary strign required to describe an FPGA of width $w$ and height $h$ is $2wh$
+binary string required to describe an FPGA of width $w$ and height $h$ is $2wh$
 bytes long.
 
 This mapping was chosen because it is loosely in line with the number of bits
-required by \cite{10.1007/3-540-63173-9_61} and it allows concise expression of
-the FPGA. The order in which cells are defined also follows
+used by \cite{10.1007/3-540-63173-9_61} and it allows concise complete expression of
+the FPGA functionality. The order in which cells are defined also follows
 \cite{10.1007/3-540-63173-9_61}, and means any crossover occurring tends to keep
 the horizontal sections consistent with each other.
 
@@ -175,8 +175,8 @@ algorithm to tackle it.
 
 Within evolutionary hardware there are a number of benchmark problems, these usually
 take the form of robot controllers, prosthetics controllers, or signal processing
-circuits. With a mind to hardware in a generic sense binary addition appeared to be
-an interesting problem, which would require a great deal of genetic algorithm tuning.
+circuits. Considering generic computer hardware, binary addition appeared to be
+an interesting commonplace problem, which would require a great deal of genetic algorithm tuning.
 
 With a desire to explore dynamic problems addition also opens up the possibility of
 introducing subtraction as a related but distinct problem. To this end evaluation
@@ -184,12 +184,12 @@ will consist of checking both addition and subtraction, both of these will have 
 associated weighting which can
 vary over time.
 
-Dispite appearing to be a trivial problem, 2-bit binary arithmatic has a number of
-neuances which might hinder the progress of a genetic algorithm. A greedy genetic
+Dispite appearing to be a trivial problem, 2-bit binary arithmetic has a number of
+nuances which might hinder the progress of a genetic algorithm. A greedy genetic
 algorithm could quickly achieve a relatively good accuracy but through uneconomic
 resource use is completely unable to progress. Genetic algorithms struggle with backtracking
 and would prefer to blindly hold on to the current best solution mindlessly exploring
-related FPGA configurations. The arithmatic probelm also requires information to be
+related FPGA configurations. The arithmetic probelm also requires information to be
 chained together, the result from one single binary calculation impacts the next binary
 calculation so a genetic algorithm needs to demonstrate the capacity to structure
 components and chain together functionality.
@@ -201,12 +201,12 @@ design language knowledge, without it the work required could have constituted t
 entire project. Also, with physical hardware the time required to evaluate each
 population member can be measured in seconds, whereas in simulation each evaluation
 requires a fraction of a second. These factors made the creation of a
-streamlined software FPGA simulator as the evaluation backend for the
+streamlined software FPGA simulator as the evaluation back end for the
 genetic algorithm an enticing prospect.
 
 The simulation works as a self contained module which exposes a series of
 evaluation functions to the evolutionary system.
-It includes intermediate variabled which are updated throughout
+It includes intermediate variables which are updated throughout
 execution, within these variables 0 and 1 represent the binary values
 0 and 1, and 2 represents an ``undefined" variable. This represents
 unknown variables.
@@ -218,17 +218,17 @@ to each cell across the top of the FPGA in turn, and a control bit (designating 
 subtraction) is fed to the top left cell. The FPGA execution consists of
 two steps, a tick, and a tock; the tick involves pulling values from the surrounding
 cells and storing them internally, then the tock involves performing any computation
-and storing the neccessary values in the output buffer associated with each neighbor.
+and storing the neccessary values in the output buffer associated with each neighbour.
 The tick tock
 cycle continues until the southern output of the bottom cells is no longer undefined
 and stabilises on a constant output; if this doesn't happen within 64 iterations
-the simulation halts. The system is deamed stable if the output doesnt change after
+the simulation halts. The system is deamed stable if the output doesn't change after
 a tick tock cycle.
 The output of the FPGA is read across the bottom row of cells.
 The halting compromise is necessary as some FPGA configurations
 have an oscillating output which never settles. This process is repeated for all possible
 additions and subtractions and then the individual is scored based on the number
-of correct bits read off the bottom-most cells.
+of correct bits read off the bottom most cells.
 
 \begin{figure}
 \centering
@@ -249,7 +249,7 @@ constituting the 2-bit answer ($b_0$,$b_1$) and the carry out bit.
 
 The FPGA initialisation step is essential to ensure a deterministic evaluation
 process. Without the initialisation, depending on the order in which evaluations
-are performed the FPGA can settle on an correct (or incorrect) output dude to the
+are performed the FPGA can settle on an correct (or incorrect) output due to the
 time taken for new values to propegate through the circuit. This leads to identical
 configurations which receive wildly different scores in two evaluations.
 
@@ -267,12 +267,12 @@ miniscule, uninteresting and unrepresentative corner of the fitness landscape
 within any reasonable timeframe.
 
 Furthermore each CLB has 7 axes of freedom, multiplying this across the entire 4x4 FPGA
-there are 112 dimensions. Visualsing a fitness landscape which exists in
+there are 112 dimensions. Visualising a fitness landscape which exists in
 112 dimensions is near impossible. In order to gain a better understanding
 of the nature of the underlying landscape a measure of the systems ``ruggedness"
 is taken, as defined by Barnett \cite{barnett2008ruggedness}. For mutation rate
-$M$, fitness function $f()$, mean mutant fitness function $\mu()$, covariance and
-variance functions $cov()$ and $var()$, Equation~\ref{equ:rugged} details how to
+$M$, fitness function $f$, mean mutant fitness function $\mu$, covariance and
+variance functions $cov$ and $var$, Equation~\ref{equ:rugged} details how to
 calculate ruggedness at a specific mutation rate, $\rho(M)$.
 
 \begin{equation}
@@ -291,7 +291,7 @@ a multiobjective-fitness function incoperating diversity weighted at 20\% accura
 configuration was arrived at after the experimentation in Chapter~\ref{chap:evaluation}.}.
 Figure~\ref{fig:rugged} outlines the relationship between the mutation rate and
 ruggedness. Even with a small number of mutations the correlation between parents
-and their children is ambysmally small. As the mutation rate aproaches 3 this correlation
+and their children is abysmally small. As the mutation rate aproaches 3 this correlation
 reaches a value of 0.1. This highlights the expected failure rate in an individuals children
 and the infrequency of viable individuals.
 
