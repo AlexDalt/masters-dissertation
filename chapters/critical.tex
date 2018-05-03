@@ -782,7 +782,7 @@ completly focussed on diversity.
 			\bfseries{Avg. Execution Time (s)} & \bfseries{Avg. Best Accuracy}\\
 			\midrule
 			(a) & 0 & 16 & 235 & 40\\
-			(b) & 20 & 23 & 238 & 44\\
+			(b) & 20 & 23 & 238 & 46\\
 			(c) & 40 & 13 & 231 & 42\\
 			(d) & 60 & 10 & 247 & 41\\
 			\bottomrule
@@ -919,7 +919,7 @@ configurations.
 
 \todo Change the virulence
 
-\subsection{Evolved 2-bit addition hardware}
+\subsection{Evolved 2-bit Addition Hardware}
 
 \begin{figure}
 	\centering
@@ -953,6 +953,8 @@ a range of uses within the domain of dynamic problems.
 
 \todo talk about the weird design cointerintuitve backwardsness because we
 dont have any evolutionary pressure to be intuitive
+
+\todo Welch's t-test
 
 \section{Fault Tolerance}
 
@@ -1045,6 +1047,12 @@ the fault occurs.
 a fault is detected.
 
 \todo mention all the weird stuff the design does ORing with itself in cell (0,0)
+
+Rather than pass data through a cell by routing an input to an output the cell
+in the top right ORs the nothern input with itself and then passes this to the cell
+to the south. This is functionally equivalent and strange choices like these are
+commonplace in genetic algorithms where
+there is no evolutionary imperitive to chose one solution over another.
 
 \subsection{``Sticky" Fault Mitigation}
 ``Sticky" faults occur when certain unpredictable environmental conditions cause

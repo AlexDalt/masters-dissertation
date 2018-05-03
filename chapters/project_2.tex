@@ -163,8 +163,8 @@ evolving a solution. If coevolving, the set of test additions is defined by the
 first half of the \texttt{Parasite} char array, and the set of test subtractions
 is defined by the second half of the array. The fitness of an individual is calculated
 as before (as the total number of correct output bits) and the parasite score is
-given as the maximum score ($bl$ where $b$ is the number of bits checked for each
-test, and $l$ is the length of the char array stored in the parasite) minus
+given as the maximum score ($bc$ where $b$ is the number of bits checked for each
+test, and $c$ is the length of the char array stored in the parasite) minus
 the score given to the host individual.
 
 The function \texttt{ind\_distance}
@@ -191,8 +191,8 @@ the random number the next individual is checked by adding it's value to the run
 the process is repeated until the random number is exceeded. When all slots in a new
 population have been filled the population(s) are mutated. To this end each member is
 itterated over and, given an expected mutation rate defined by \texttt{MUTATION} and
-genetic material of length $i$, each bit in each individual is flipped with probability
-$\frac{1}{i}\texttt{MUTATION}$.
+genetic material of length $l$, each bit in each individual is flipped with probability
+$\frac{1}{l}\texttt{MUTATION}$.
 
 \texttt{ind\_prob} implements Equation~\ref{equ:skew} to skew the ranking to
 be more or less discriminatory to highly performing individuals. The skewing
@@ -265,10 +265,9 @@ typical of this hardware this step can be used to develop highly specific
 fault tolerant designs.
 
 \subsection{Dynamic Weightings Implimentation}
-Programatically or by user input the relative weightings of addition and subtraction
-can be shifted mid-execution.
-
-\todo more here
+Programatically, or by user input, the relative weightings of addition and subtraction
+can be shifted mid-execution. By pressing the right or left arrow keys the weighting
+is moved towards addition or subtraction respectively.
 
 \subsection{GUI}
 The user interface is controlled by the simulation backend, which exposes a
@@ -295,7 +294,12 @@ denote correctly performed addition and subtraction respectively, for a given
 if test all 3 bits are correct the test is highlighted in green, if all 3 are wrong
 it is highlighted in red.
 
-\todo describe what the gui shows (cell breakdown)
+The GUI fully describes the functional components of the FPGA. The function performed
+by the cell is written in the centre, with the function inputs directly above
+(N, E, S, W representing the cardinal compass directions). For each neighbour the
+cell has the value passed to that neighbour is denoted by the letter directly
+next to the `X' on the cell boundry. This value can be N, E, S, W, or F, representing the input from the
+neighbour to the north, south, east, west or the output of the function respectively.
 
 \subsection{Test suite}
 The aparatus to perform tests takes the form of a while loop encapsulating the
