@@ -37,6 +37,8 @@
 \graphicspath{ {images/} }
 \usepackage{tikz}
 \usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{lscape}
 \usepackage[labelformat=simple]{subcaption}
 \renewcommand\thesubfigure{(\alph{subfigure})}
 \usetikzlibrary{chains,decorations.pathreplacing}
@@ -71,9 +73,9 @@
 
 \tableofcontents
 \listoffigures
-\listoftables
+%\listoftables
 \listofalgorithms
-\lstlistoflistings
+%\lstlistoflistings
 
 % The following sections are part of the front matter, but are not generated
 % automatically by LaTeX; the use of \chapter* means they are not numbered.
@@ -82,17 +84,11 @@
 
 \chapter*{Executive Summary}
 
-{\bf \color{red}A compulsory section, of at most $1$ page} 
-\vspace{1cm} 
-
 \input{chapters/executive}
 
 % -----------------------------------------------------------------------------
 
 \chapter*{Supporting Technologies}
-
-{\bf \color{red}A compulsory section, of at most $1$ page}
-\vspace{1cm} 
 
 \input{chapters/supporting_tech}
 
@@ -100,17 +96,12 @@
 
 \chapter*{Notation and Acronyms}
 
-{\bf \color{red}An optional section, of roughly $1$ or $2$ pages}
-\vspace{1cm} 
-
 \input{chapters/notation}
 
 % -----------------------------------------------------------------------------
 
 \chapter*{Acknowledgements}
 
-{\bf \color{red}An optional section, of at most $1$ page}
-\vspace{1cm} 
 \input{chapters/acknowledgements}
 
 % =============================================================================
@@ -133,19 +124,12 @@
 \chapter{Contextual Background}
 \label{chap:context}
 
-{\bf \color{red}A compulsory chapter,     of roughly $5$ pages}
-\vspace{1cm} 
-
-
 \input{chapters/contextual}
 
 % -----------------------------------------------------------------------------
 
 \chapter{Technical Background}
 \label{chap:technical}
-
-{\bf \color{red}A compulsory chapter,     of roughly $10$ pages} 
-\vspace{1cm} 
 
 \input{chapters/technical}
 
@@ -154,31 +138,21 @@
 \chapter{Project Execution}
 \label{chap:execution}
 
-{\bf \color{red}A topic-specific chapter, of roughly $15$ pages} 
-\vspace{1cm} 
-
 \input{chapters/project_1}
 \input{chapters/project_2}
-
 
 % -----------------------------------------------------------------------------
 
 \chapter{Critical Evaluation}
 \label{chap:evaluation}
 
-{\bf \color{red}A topic-specific chapter, of roughly $15$ pages} 
-\vspace{1cm} 
-
 \input{chapters/critical}
-
 
 % -----------------------------------------------------------------------------
 
 \chapter{Conclusion}
 \label{chap:conclusion}
 
-{\bf \color{red}A compulsory chapter,     of roughly $5$ pages} 
-\vspace{1cm} 
 \input{chapters/conclusion}
 
 % =============================================================================
@@ -221,7 +195,7 @@ FPGA simulator, and how internal data is organised.
 #define FPGA_HEIGHT 4
 #define FPGA_WIDTH 4
 #define STRING_LENGTH_BYTES FPGA_WIDTH * FPGA_HEIGHT * 2
-#define FAULT_NUM 0
+#define FAULT_NUM 1
 #define FAULT_TYPE_CON 0
 
 typedef enum {
@@ -270,14 +244,19 @@ typedef struct {
 
 /*
  * FPGA is defined by a bitstring of the following format:
- * 		- the bitstring defines cells from left to right, top to bottom, row by row, one byte per cell
- * 		- the least significant 2 bits define the value pushed to n_out (F,EAST,SOUTH,WEST)
+ * 		- the bitstring defines cells from left to right, top to bottom,
+ *		  row by row, one byte per cell
+ * 		- the least significant 2 bits define the value pushed to n_out
+ *		  (F,EAST,SOUTH,WEST)
  * 		- the next 2 define the value pushed to e_out (NORTH,F,SOUTH,WEST)
  * 		- the next 2 define the value pushed to s_out (NORTH,EAST,F,WEST)
  * 		- the next 2 define the value pushed to w_out (NORTH,EAST,SOUTH,F)
- * 		- the next 2 define where the first input for F comes from (NORTH,EAST,SOUTH,WEST)
- * 		- the next 2 define where the second input for F comes from (NORTH,EAST,SOUTH,WEST)
- * 		- the next 3 define the function F performs (OFF,NOT,OR,AND,NAND,NOR,XOR,XNOR)
+ * 		- the next 2 define where the first input for F comes from
+ *		  (NORTH,EAST,SOUTH,WEST)
+ * 		- the next 2 define where the second input for F comes from
+ *		  (NORTH,EAST,SOUTH,WEST)
+ * 		- the next 3 define the function F performs
+ *		  (OFF,NOT,OR,AND,NAND,NOR,XOR,XNOR)
  * 		- the most significant bit is reserved
  */
 
@@ -287,7 +266,8 @@ void evaluate_fpga ( FPGA *fpga );
 
 void init_curses ();
 
-void redraw ( int iteration, FPGA fpga, int most_fit, int mean_fit, int mean_div, int add_weight, int sub_weight );
+void redraw ( int test_loop, int iteration, FPGA fpga, int most_fit, int mean_fit,
+int mean_div, int add_weight, int sub_weight );
 
 void tidy_up_curses();
 \end{lstlisting}
@@ -303,26 +283,35 @@ void tidy_up_curses();
 #include <fcntl.h>
 #include <unistd.h>
 #include <math.h>
+#include <time.h>
 #include "simulator.h"
 
-#define POP_SIZE 400
-#define MUTATION 0.5f
+#define TEST_SIZE 30
+#define TEST_LOOP 15000
+#define WEIGHT_TEST 0
+#define FAULT_INJECTION 0
+#define POP_SIZE 50
+#define MUTATION 3.0f
 #define SIZE_WEIGHT 0
-#define DIVERSITY_WEIGHT 4
+#define DIVERSITY_WEIGHT 2
 #define ELITISM 1
 #define FITNESS_WEIGHT 10
 #define COEVOLVE 0
 #define STICKY 0
-#define LOG 1
-#define PROB_SKEW 0.0f //between 0 or 1, 1 is linear
+#define LOG 0
+#define PROB_SKEW 1.0f //between 0 or 1, 1 is linear
 #define VIRULENCE 1.0f
 #define PARASITE_SIZE 16
+#define CROSSOVER 0.7f
+#define TOURNAMENT_SIZE 20 //set to POP_SIZE for rank-based selection
+#define RUGGEDNESS 0
 
 int add_weight, sub_weight;
 
 typedef struct Individual {
 	unsigned char values[ STRING_LENGTH_BYTES ];
 	int eval[ 3 ];
+	int add_score, sub_score;
 	FPGA fpga;
 } Individual;
 
@@ -334,7 +323,59 @@ typedef struct Parasite {
 
 \chapter{Experimental Results}
 \label{appx:results}
-\todo some meaty tables here
+
+\begin{landscape}
+	\begin{longtable}{cccccccc|ccc}
+		\toprule
+		Figure& {Pop. Size} & {Fitness Func.} & {Selection}
+			  &{Elitism} & \parbox{0.06\linewidth}{\centering Crossover Prob.} 
+			  &\parbox{0.06\linewidth}{\centering Mutation Rate} & Coevolution
+		&\parbox{0.06\linewidth}{\centering Perf. Runs (\%)} & \parbox{0.06\linewidth}{\centering Avg. Exec. Time (s)}
+		&\parbox{0.06\linewidth}{\centering Avg. Best Accuracy (\%)}\\
+		\midrule
+		\ref{fig:initial} & 50 & Simple & Rank (skew=1) & Yes & 0.7 & 2.7 & No & 0 & 235 & 81\\
+		\ref{fig:initial_div} & 50 & Multi-Objective\footnotemark[2] & Rank (skew=1) & Yes & 0.7 & 2.7 & No & 0 & 267 & 83\\
+		\ref{fig:500_no_div} & 500 & Simple & Rank (skew=1) & Yes & 0.7 & 2.7 & No & 0 & 2250 & 90\\
+		\ref{fig:500_div} & 500 & Multi-Objective\footnotemark[2] & Rank (skew=1) & Yes & 0.7 & 2.7 & No & 0 & 2857 & 83\\
+		\ref{fig:mut_1} & 50 & Multi-Objective\footnotemark[2] & Rank (skew=1) & Yes & 0.7 & 1 & No & 0 & 245 & 83 \\
+		\ref{fig:mut_2} & 50 & Multi-Objective\footnotemark[2] & Rank (skew=1) & Yes & 0.7 & 2 & No & 0 & 264 & 83 \\
+		\ref{fig:mut_3} & 50 & Multi-Objective\footnotemark[2] & Rank (skew=1) & Yes & 0.7 & 3 & No & 0 & 363 & 83 \\
+		\ref{fig:mut_4} & 50 & Multi-Objective\footnotemark[2] & Rank (skew=1) & Yes & 0.7 & 4 & No & 0 & 368 & 83 \\
+		\ref{fig:skew_0} & 50 & Multi-Objective\footnotemark[2] & Rank (skew=0) & Yes & 0.7 & 3 & No & 0 & 304 & 83 \\
+		\ref{fig:skew_point5} & 50 & Multi-Objective\footnotemark[2] & Rank (skew=0.5) & Yes & 0.7 & 3 & No & 0 & 415 & 83 \\
+		\ref{fig:tour_10} & 50 & Multi-Objective\footnotemark[2] & Tournament\footnotemark[4] & Yes & 0.7 & 3 & No & 0 & 264 & 88 \\
+		\ref{fig:tour_20} & 50 & Multi-Objective\footnotemark[2] & Tournament\footnotemark[5] & Yes & 0.7 & 3 & No & 13 & 231 & 88 \\
+		\ref{fig:tour_30} & 50 & Multi-Objective\footnotemark[2] & Tournament\footnotemark[6] & Yes & 0.7 & 3 & No & 3 & 260 & 83 \\
+		\ref{fig:tour_40} & 50 & Multi-Objective\footnotemark[2] & Tournament\footnotemark[7] & Yes & 0.7 & 3 & No & 0 & 244 & 83 \\
+		\ref{fig:cross_0} & 50 & Multi-Objective\footnotemark[2] & Tournament\footnotemark[5] & Yes & 0 & 3 & No & 10 & 243 & 85 \\
+		\ref{fig:cross_point5} & 50 & Multi-Objective\footnotemark[2] & Tournament\footnotemark[5] & Yes & 0.5 & 3 & No & 3 & 245 & 85 \\
+		\ref{fig:cross_1} & 50 & Multi-Objective\footnotemark[2] & Tournament\footnotemark[5] & Yes & 1 & 3 & No & 3 & 249 & 85 \\
+		\ref{fig:cross_1} & 50 & Multi-Objective\footnotemark[2] & Tournament\footnotemark[5] & Yes & 1 & 3 & No & 3 & 249 & 85 \\
+		\ref{fig:no_elitism} & 50 & Multi-Objective\footnotemark[2] & Tournament\footnotemark[5] & No & 0.7 & 3 & No & 0 & 281 & 40 \\
+		\ref{fig:pop_25} & 25 & Multi-Objective\footnotemark[2] & Tournament\footnotemark[5] & Yes & 0.7 & 3 & No & 0 & 126 & 83 \\
+		\ref{fig:pop_100} & 100 & Multi-Objective\footnotemark[2] & Tournament\footnotemark[5] & Yes & 0.7 & 3 & No & 17 & 457 & 88 \\
+		\ref{fig:pop_200} & 200 & Multi-Objective\footnotemark[2] & Tournament\footnotemark[5] & Yes & 0.7 & 3 & No & 57 & 955 & 92 \\
+		\ref{fig:div_0} & 50 & Simple & Tournament\footnotemark[5] & Yes & 0.7 & 3 & No & 16 & 235 & 88 \\
+		\ref{fig:div_2} & 50 & Multi-Objective\footnotemark[1] & Tournament\footnotemark[5] & Yes & 0.7 & 3 & No & 23 & 238 & 94 \\
+		\ref{fig:div_6} & 50 & Multi-Objective\footnotemark[3] & Tournament\footnotemark[5] & Yes & 0.7 & 3 & No & 10 & 247 & 85 \\
+		\ref{fig:coev_8} & 50 & Multi-Objective\footnotemark[1] & Tournament\footnotemark[5] & Yes & 0.7 & 3 & Yes\footnotemark[8] & 0 & 740 & 71 \\
+		\ref{fig:coev_16} & 50 & Multi-Objective\footnotemark[1] & Tournament\footnotemark[5] & Yes & 0.7 & 3 & Yes\footnotemark[9] & 0 & 605 & 77 \\
+		\ref{fig:coev_32} & 50 & Multi-Objective\footnotemark[1] & Tournament\footnotemark[5] & Yes & 0.7 & 3 & Yes\footnotemark[10] & 0 & 703 & 71 \\
+		\ref{fig:coev_16_no_elit} & 50 & Multi-Objective\footnotemark[1] & Tournament\footnotemark[5] & No & 0.7 & 3 & Yes\footnotemark[9] & 0 & 535 & 50 \\
+		\bottomrule
+
+	\end{longtable}
+	\footnotetext[1]{Diversity Weight 20\%}
+	\footnotetext[2]{Diversity Weight 40\%}
+	\footnotetext[3]{Diversity Weight 60\%}
+	\footnotetext[4]{Size 10}
+	\footnotetext[5]{Size 20}
+	\footnotetext[6]{Size 30}
+	\footnotetext[7]{Size 40}
+	\footnotetext[8]{Parasite Size 8}
+	\footnotetext[9]{Parasite Size 16}
+	\footnotetext[10]{Parasite Size 32}
+\end{landscape}
 
 % =============================================================================
 

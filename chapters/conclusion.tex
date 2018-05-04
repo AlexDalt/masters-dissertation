@@ -1,45 +1,16 @@
-\noindent
-{
-	\color{red}
-The concluding chapter of a dissertation is often underutilised because it
-is too often left too close to the deadline: it is important to allocation
-enough attention.  Ideally, the chapter will consist of three parts:
-
-\begin{enumerate}
-\item (Re)summarise the main contributions and achievements, in essence
-      summing up the content.
-\item Clearly state the current project status (e.g., ``X is working, Y
-      is not'') and evaluate what has been achieved with respect to the
-      initial aims and objectives (e.g., ``I completed aim X outlined
-      previously, the evidence for this is within Chapter Y'').  There
-      is no problem including aims which were not completed, but it is
-      important to evaluate and/or justify why this is the case.
-\item Outline any open problems or future plans.  Rather than treat this
-      only as an exercise in what you {\em could} have done given more
-      time, try to focus on any unexplored options or interesting outcomes
-      (e.g., ``my experiment for X gave counter-intuitive results, this
-      could be because Y and would form an interesting area for further
-      study'' or ``users found feature Z of my software difficult to use,
-      which is obvious in hindsight but not during at design stage; to
-      resolve this, I could clearly apply the technique of Smith [7]'').
-\end{enumerate}
-}
-
 \section{Summary of Achievements}
 My intention of recreating the genetic algorithm from Thompson's work on
 evolutionary hardware \cite{10.1007/3-540-63173-9_61} and applying it to the
-binary arithmatic problem was successful, as outlined in Chapter~\ref{chap:evaluation}.
-The inital genetic algorithm parameters in Section~\ref{s:ga_tune} mirror
+binary arithmetic problem was successful, as outlined in Chapter~\ref{chap:evaluation}.
+The initial genetic algorithm parameters in Section~\ref{s:ga_tune} mirror
 Thompson's exactly. When applied to 2-bit binary addition the algorithm
 executed quickly but in 30 repeated executions to generation 15000, failed to produce a perfect
 binary ADDer. The average final accuracy was 40 over 30 runs, out of a maximum of 48.
 
-\todo ref the range of solutions in the histogram which will be created
-
 This baseline algorithm was then improved on by factoring in features from
-modern genetic algorithm and evolvable hardware literiture.
+modern genetic algorithm and evolvable hardware literature.
 These features included; a
-multi-objective fitness function incorperating a diversity measurement,
+multi-objective fitness function incorporating a diversity measurement,
 mutation rate variation, tournament selection, varied crossover probability,
 the absence of elitism, population size, multi-objective weightings, and
 coevolution (with varied virulence). Assessing each of these in turn
@@ -48,31 +19,24 @@ improved performance. In repeated experiments almost 1/4 of executions to
 generation 15000 produced a perfect solution will 100\% accuracy. This
 executed in comparable time to the initial parameters specified in
 \cite{10.1007/3-540-63173-9_61}, and achieved an average final fitness of 44,
-a clear improvement.
-
-\todo test to show that this is statistically significant
-
-\todo The failure cases were varied but one common one was 
-
-\todo directly compare to the paper where tournament selection was used to evolve an adder
-
+a clear improvement. Using a t-test this was shown to be a statistically significant
+improvement.
 The search space of FPGAs defined by 32 byte strings is huge. Clearly the
-scheme devised in this dissertation is a vast improvment over innumerated bruteforce
-search. \todo stats analysis of number of runs required to be 99\% sure of producing a
-result.
+scheme devised in this dissertation is a vast improvement over enumerated bruteforce
+search.
 
 This system was then exposed to a series of dynamic problems; simple fault
 recovery, ``sticky" fault mitigation, and shifting weighting optimisation.
 The system coped admirably with simple fault recovery; when a critical fault
-was injected in the FPGA simulation the accuracy dropped to a cripplingly low.
+was injected in the FPGA simulation the accuracy dropped to a crippling low.
 In repeated executions, by 14000 generations evolving with the fault 43\%
 had developed perfect solutions, and the average accuracy was 42. The success
 rate here is incredibly high when compared to the performance of the underlying
 evolvable hardware system which achieved perfect answers on 23\% of repeated executions.
-With a single oscilating ``sticky" fault on 7\% the genetic algorithm was
-able to divise a solution which worked both in the presence of the fault and without
-it. Even with two faults clear improvments in how the system coped with shifting
-correctness critera are visible.
+With a single oscillating ``sticky" fault on 7\% the genetic algorithm was
+able to devise a solution which worked both in the presence of the fault and without
+it. Even with two faults clear improvements in how the system coped with shifting
+correctness criteria are visible.
 
 The entire evolvable platform is available on GitHub. The FPGA simulation
 is a distinct component which exposes concise functionality to the evolutionary
@@ -90,7 +54,7 @@ the execution time scaled nicely with FPGA size, but the clear culprit in
 slow evaluation cycles was the sheer number of trails conducted for larger
 problems. Coevolution was proposed as a mitigation strategy, and would reduce
 the number of trials conducted; however, performance under the 2-bit problem
-was severly dissapointing and was completely unsuitable as a replacement to
+was severely disappointing and was completely unsuitable as a replacement to
 conventional exhaustive testing. In order to achieve any sort of success
 elitism was non-optional and this required uniform exhaustive testing to function
 properly. Even without the extra computation required for elitism, the overheads
@@ -112,40 +76,39 @@ There are a great number of limitations existing within this project, and
 evolvable hardware in a wider sense. 2-bit addition to most would seem trivial,
 and even though the execution time was painlessly short, directly extending
 this to 3-bit addition required 1473s and 4-bit addition 8537s. Designing an
-itterative design system around any larger problem than 2-bit binary arithmatic
+iterative design system around any larger problem than 2-bit binary arithmetic
 is simply not an option. Extending
 any assumptions here to useful applications requires solving a great number of
 challenges.
 
 Visual inspection of many of the accuracy graphs in Chapter~\ref{chap:evaluation}
-could lead a reader to believe that many improvments are simply lucky leaps from
-a general background population which usualy performs moderatly; and the reader
+could lead a reader to believe that many improvements are simply lucky leaps from
+a general background population which usually performs moderately; and the reader
 would not be wrong. Population quality tends to reach a certain value and then
 remain consistent, and best-case improvements become fewer and far between as
-execution continues. The only way a system is saved from backtacking is by the
-inclusing of an elitism mechanic. These together indicate that the population improves
-until a certain value and then maintains a primordeal soup, rarely performing well
+execution continues. The only way a system is saved from backtracking is by the
+including of an elitism mechanic. These together indicate that the population improves
+until a certain value and then maintains a primordial soup, rarely performing well
 but on occasion generating an example with an improved performance. The cycle repeats
-but making improvements requires larger and larger leaps from this primordeal soup.
+but making improvements requires larger and larger leaps from this primordial soup.
 
 The disparity between vanilla evolutionary hardware in Figure~\ref{fig:div_2}, only
 achieving a success rate of 23\% and the fault injection examples in
-Figure~\ref{fig:simple_fault} achieving 43\% highlights the tendancy for
-this evolvable hardware incarnation to stumble blindly into evolutionary deadends,
+Figure~\ref{fig:simple_fault} achieving 43\% highlights the tendency for
+this evolvable hardware incarnation to stumble blindly into evolutionary dead ends,
 often dwelling needlessly on bloated hopeless solutions. These solutions take up
-too many of the resources alloted to the FPGA to achieve their mostly-good results
+too many of the resources allotted to the FPGA to achieve their mostly-good results
 to progress to perfection.
 
-The system optimisation under dynamicly shifting weightings is underwhelming,
+The system optimisation under dynamically shifting weightings is underwhelming,
 until the system is placed under real pressure the evolutionary tactic seems to be
 to maintain the current solution rather than perform minute tweaks to gain a performance
-advantage.
-
-\todo mention the domain specific knowledge required for hardware design is
-replaced by domain specific knowledge for GA design.
+advantage. The domain specific knowledge required to design hardware, through
+evolvable hardware, is replaced by domain specific knowledge for genetic algorithm
+design.
 
 \section{Project state}
-A fully flexible binary arithmatic evolutionary hardware platform works, with
+A fully flexible binary arithmetic evolutionary hardware platform works, with
 a plethora of options and configurable components. The FPGA simulator and GUI are a distinct
 self contained entity allowing for use in machine learning hardware design beyond
 genetic algorithms.
@@ -156,23 +119,23 @@ extend this project with more machine learning mechanism to optimise the FPGA
 configuration for the binary addition problem. Further study into the underlying
 structure of the search space could provide insights which would allow further
 tuning of the genetic algorithm or, more likely, open the door to more esoteric
-specific implimentations of other techniques, such as neural networks.
+specific implementations of other techniques, such as neural networks.
 
-Remaning close to genetic algorithms the nature of the mutation function
+Remaining close to genetic algorithms the nature of the mutation function
 could shift. Rather than comprising random bitflips there could be a chance
 of a predefined operation with knowledge of the phenotype to genotype mapping,
-such as; cell translation/rotation, cell reording, or mirroring cell connections.
+such as; cell translation/rotation, cell reordering, or mirroring cell connections.
 Such a modification would move this exploration to the fringes of genetic algorithm
 research, if not beyond the realm of, as genetic algorithms conventionally do not
 have any in-build understanding of what the genetic material represents (beyond the
 evaluation step).
 
 If the plethora of issues surrounding system scaling could be addressed
-one could concieve of a hardware system similar to what was proposed in
+one could conceive of a hardware system similar to what was proposed in
 \cite{10.1007/3-540-61093-6_6}, save for a general purpose processor.
 Specific fault-prone units could be replaced with micro-FPGAs, each preloaded
 with the original component specification. Upon the detection of a fault
-the genetic algorithm begins. This itterates over the design finding ways to
+the genetic algorithm begins. This iterates over the design finding ways to
 capitalise on the demonstrated fault recovery performance and devise a unit
 which works perfectly in the presence of the fault. The vast majority of modern systems are multi-core
 so it is not unthinkable that should a component in one core fail any alternative
@@ -180,16 +143,16 @@ cores could initiate and conduct the self-healing process. These systems
 could take advantage of evolvable hardware accelerator chips to create
 truly rugged circuitry. The evolutionary search could be conducted in
 CPU idling time, and even if it takes hours, a component which wouldn't
-otherwise work could be opperational; ideal for satalites and/or operations
+otherwise work could be operational; ideal for satellites and/or operations
 working on a scale such that brief component downtime for the sake of
 longevity is not a huge issue.
 
 If improvements in algorithm design leads to an evolvable hardware system
 which, when confronted by a dynamically shifting weighted problem, can
-perform prompt ajustments (at a speed faster than presented in this document)
+perform prompt adjustments (at a speed faster than presented in this document)
 then a flexible pseudo-FPGA-CPU as outlined above could facilitate
 user/program specific fine tuning. Given contextual information (which shifts
-the desirablility of certain functions and therefore the weightings) the
+the desirability of certain functions and therefore the weightings) the
 processor could recalibrate to better suit it's function. Suppose,
 as a trivial example, user A performs a great deal of multiplication,
 and user B loves subtraction; given this information the processor should
